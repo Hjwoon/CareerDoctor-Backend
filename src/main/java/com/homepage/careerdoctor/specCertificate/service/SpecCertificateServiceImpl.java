@@ -17,7 +17,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
     // 스펙 진단하기
     @Override
-    public ResponseEntity<CustomApiResponse<?>> sertificateSpec(CertificateSpecDto certificateSpecDto) {
+    public ResponseEntity<CustomApiResponse<?>> certificateSpec(CertificateSpecDto certificateSpecDto) {
 
         //Optional<SpecCertificate> foundSpec = specRepository.findByUserId(certificateSpecDto.getUserId());
 

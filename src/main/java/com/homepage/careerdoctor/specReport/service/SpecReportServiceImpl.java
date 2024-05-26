@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SpecReportServiceIpl implements SpecReportService{
+public class SpecReportServiceImpl implements SpecReportService{
 
     private final SpecReportRepository specReportRepository;
     @Override

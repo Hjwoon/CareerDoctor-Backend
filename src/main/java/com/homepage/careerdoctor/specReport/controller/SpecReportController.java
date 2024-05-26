@@ -1,6 +1,5 @@
 package com.homepage.careerdoctor.specReport.controller;
 
-import com.homepage.careerdoctor.review.dto.ReviewWriteDto;
 import com.homepage.careerdoctor.specReport.dto.SpecReportWriteDto;
 import com.homepage.careerdoctor.specReport.service.SpecReportServiceImpl;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
