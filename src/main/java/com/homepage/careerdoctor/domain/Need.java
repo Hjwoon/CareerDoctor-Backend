@@ -27,5 +27,5 @@ public class Need extends BaseEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private NeedName needName;
+    private NeedSpec needSpec;
 }

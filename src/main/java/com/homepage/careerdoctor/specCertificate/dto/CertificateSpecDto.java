@@ -14,6 +14,7 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificateSpecDto {
+
     private String userId;
 
     @NotEmpty(message = "생일을 입력해주세요.")
