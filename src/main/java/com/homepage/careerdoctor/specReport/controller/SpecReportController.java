@@ -21,19 +21,19 @@ public class SpecReportController {
         return specReportService.writeReport(specId, dto);
     }
 
+    @GetMapping("/reports/all")
+    private ResponseEntity<CustomApiResponse<?>> getReports() {
+        return specReportService.getReports();
+    }
+
     @GetMapping("/reports/{userId}")
-    private ResponseEntity<CustomApiResponse<?>> getReports(@RequestParam String type) {
-        return specReportService.getReports(type);
+    private ResponseEntity<CustomApiResponse<?>> getAllMyReport(@PathVariable String userId) {
+        return specReportService.getAllMyReport(userId);
     }
 
     @GetMapping("/reports/{userId}/{reportId}")
-    private ResponseEntity<CustomApiResponse<?>> getMyReport(@PathVariable String userId) {
-        return specReportService.getMyReport(userId);
-    }
-
-    @GetMapping("/{userId}/{reportId}")
-    private ResponseEntity<CustomApiResponse<?>> getMyReports(@PathVariable String userId, @PathVariable Long reportId) {
-        return specReportService.getMyReports(userId, reportId);
+    private ResponseEntity<CustomApiResponse<?>> getMyReport(@PathVariable String userId, @PathVariable Long reportId) {
+        return specReportService.getMyReport(userId, reportId);
     }
 
 }

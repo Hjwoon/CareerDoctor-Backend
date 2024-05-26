@@ -18,6 +18,9 @@ public class SpecReport extends BaseEntity {
     @Column(name = "REPORT_ID")
     private Long reportId;
 
+    @Column(name = "WRITER_ID")
+    private String writerId;
+
     @Column(name = "REPORT_TITLE")
     private String reportTitle;
 

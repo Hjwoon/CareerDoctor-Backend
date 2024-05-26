@@ -1,9 +1,11 @@
 package com.homepage.careerdoctor.specReport.service;
 
 
-import com.homepage.careerdoctor.domain.SpecReport;
-import com.homepage.careerdoctor.domain.User;
-import com.homepage.careerdoctor.specReport.dto.SpecReportListDto;
+import com.homepage.careerdoctor.domain.*;
+import com.homepage.careerdoctor.review.repository.ReviewRepository;
+import com.homepage.careerdoctor.specCertificate.repository.SpecRepository;
+import com.homepage.careerdoctor.specReport.dto.FeedbackToMeDto;
+import com.homepage.careerdoctor.specReport.dto.ReportWantUserListDto;
 import com.homepage.careerdoctor.specReport.dto.SpecReportWriteRequestDto;
 import com.homepage.careerdoctor.specReport.dto.SpecReportWriteResponseDto;
 import com.homepage.careerdoctor.specReport.repository.SpecReportRepository;
@@ -25,6 +27,8 @@ public class SpecReportServiceImpl implements SpecReportService{
 
     private final SpecReportRepository specReportRepository;
     private final UserRepository userRepository;
+    private final SpecRepository specRepository;
+    private final ReviewRepository reviewRepository;
 
 
     // 소견서 작성
@@ -35,6 +39,7 @@ public class SpecReportServiceImpl implements SpecReportService{
 
         // 존재하는 진단서라면 소견서 작성
         SpecReport newReport = SpecReport.builder()
+                .writerId(dto.getWriterId())
                 .reportTitle(dto.getReportTitle())
                 .reportContent(dto.getReportContent())
                 .needs(dto.getNeeds())
@@ -51,53 +56,80 @@ public class SpecReportServiceImpl implements SpecReportService{
                 .body(CustomApiResponse.createSuccess(201, data, "소견서를 성공적으로 작성했습니다."));
     }
 
-    // 소견서 목록 보기
+    // 소견서 원하는 사람들 목록 보기
     @Override
-    public ResponseEntity<CustomApiResponse<?>> getReports(String type) {
-        List<SpecReport> reports = specReportRepository.findAll();
-        List<SpecReportListDto.ReportResponse> reportResponses = new ArrayList<>();
+    public ResponseEntity<CustomApiResponse<?>> getReports() {
 
-        if (type.equals("all")) { // 전체 조회
-            for (SpecReport report : reports) {
-                reportResponses.add(SpecReportListDto.ReportResponse.builder()
-                                .reportId(report.getReportId())
-                                .writerId(report.getUser().getUserId())
-                                .level(report.getUser().getLevel())
-                                .reportTitle(report.getReportTitle())
-                                .reportContent(report.getReportContent())
-                                .needs(report.getNeeds())
-                                .createdAt(report.getCreatedAt())
-                                .build());
-            }
-        } else {
-            int limit = Math.min(6, reports.size());
-            for (int i = 0; i < limit; i++) {
-                SpecReport report = reports.get(i);
-                reportResponses.add(SpecReportListDto.ReportResponse.builder()
-                        .reportId(report.getReportId())
-                        .writerId(report.getUser().getUserId())
-                        .level(report.getUser().getLevel())
-                        .reportTitle(report.getReportTitle())
-                        .reportContent(report.getReportContent())
-                        .needs(report.getNeeds())
-                        .createdAt(report.getCreatedAt())
-                        .build());
+        // 진단서 받은 후 작성
+        List<SpecCertificate> specCertificates = specRepository.findAll();
+        List<ReportWantUserListDto.UserResponse> userResponses = new ArrayList<>();
+
+        for (SpecCertificate specCertificate : specCertificates) {
+            userResponses.add(ReportWantUserListDto.UserResponse.builder()
+                            .userId(specCertificate.getName())
+                            .birth(specCertificate.getBirth())
+                            .gender(specCertificate.getGender())
+                            .level(specCertificate.getLevel())
+                            .build());
+        }
+
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse
+                        .createSuccess(201, userResponses, "피드백을 원하는 유저 목록을 불러오는데 성공했습니다."));
+    }
+
+    // 나를 피드백 해준 사람들 목록 상세 보기
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> getAllMyReport(String userId) {
+
+        // 현재 회원이 누구인지 DB에서 찾는다.
+        Optional<User> findUser = userRepository.findByUserId(userId);
+        // 전체 소견서를 불러온다.
+        List<SpecReport> reports = specReportRepository.findAll();
+        // 전체 후기를 불러온다.
+        List<Review> reviews = reviewRepository.findAll();
+
+        // data로 반환할 DTO
+        FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+
+        // 후기의 유저 아이디와 현재 유저의 아이디가 같으면 그 아이디를 이용해 소견서 아이디를 찾는다.
+        // 찾은 소견서 아이디로 내게 피드백 해준 사람들을 찾는다.
+        for (int i = 0; i < reviews.size(); i++) {
+            if (reviews.get(i).getUser().getUserId() == findUser.get().getUserId()) {
+                Long myReportId = reviews.get(i).getSpecReport().getReportId();
+                Optional<SpecReport> myReport = specReportRepository.findByReportId(myReportId);
+
+                feedbackList.setReportId(myReportId);
+                feedbackList.setReportTitle(myReport.get().getReportTitle());
+                feedbackList.setReportContent(myReport.get().getReportContent());
+                feedbackList.setNeeds(myReport.get().getNeeds());
+                feedbackList.setCreatedAt(myReport.get().getCreatedAt());
             }
         }
 
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse
+                        .createSuccess(201, feedbackList, "나에게 피드백을 해준 유저 목록을 불러오는데 성공했습니다."));
+    }
+
+    // 피드백 해준 소견서 상세보기
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> getMyReport(String userId, Long reportId) {
+        // 현재 회원이 누구인지 DB에서 찾는다.
+        Optional<User> findUser = userRepository.findByUserId(userId);
+        // 상세를 보고 싶은 소견서를 찾는다.
+        Optional<SpecReport> findReport = specReportRepository.findByReportId(reportId);
+        // data로 반환할 DTO
+        FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+
+        // 소견서에서 값을 찾아 dto를 이용해 response Body로 전달한다.
+        feedbackList.setReportTitle(findReport.get().getReportTitle());
+        feedbackList.setReportContent(findReport.get().getReportContent());
+        feedbackList.setCreatedAt(findReport.get().getCreatedAt());
 
         return ResponseEntity.status(201)
-                .body(CustomApiResponse.createSuccess(201, reportResponses, "소견서 목록을 성공적으로 작성했습니다."));
-    }
+                .body(CustomApiResponse
+                        .createSuccess(201, feedbackList, "피드백 받은 소견서 하나를 보는데 성공했습니다."));
 
-    @Override
-    public ResponseEntity<CustomApiResponse<?>> getMyReport(String userId) {
-        //List<SpecReport> findReport = specReportRepository.findAllById()
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<CustomApiResponse<?>> getMyReports(String userId, Long reportId) {
-        return null;
     }
 }

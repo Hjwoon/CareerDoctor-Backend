@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface SpecReportRepository extends JpaRepository<SpecReport, Long> {
 
     Optional<SpecReport> findByReportId(Long reportId);
+
 }

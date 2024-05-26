@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface SpecReportService {
     public ResponseEntity<CustomApiResponse<?>> writeReport(Long specId, SpecReportWriteRequestDto dto); // 소견서 작성
-    public ResponseEntity<CustomApiResponse<?>> getReports(String type); // 소견서 조회
+    public ResponseEntity<CustomApiResponse<?>> getReports(); // 소견서 조회
 
-    ResponseEntity<CustomApiResponse<?>> getMyReport(String userId);
+    ResponseEntity<CustomApiResponse<?>> getAllMyReport(String userId);
 
-    ResponseEntity<CustomApiResponse<?>> getMyReports(String userId, Long reportId);
+    ResponseEntity<CustomApiResponse<?>> getMyReport(String userId, Long reportId);
 }

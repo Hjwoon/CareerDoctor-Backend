@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecReportWriteRequestDto {
+    private String writerId;
+
     @NotEmpty(message = "소견서 제목을 작성해주세요.")
     private String reportTitle;
 
