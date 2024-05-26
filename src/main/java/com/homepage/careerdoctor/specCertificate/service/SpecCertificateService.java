@@ -5,5 +5,5 @@ import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface SpecCertificateService {
-    public ResponseEntity<CustomApiResponse<?>> sertificateSpec(CertificateSpecDto dto); // 스펙 작성하기
+    public ResponseEntity<CustomApiResponse<?>> certificateSpec(CertificateSpecDto dto); // 스펙 작성하기
 }
