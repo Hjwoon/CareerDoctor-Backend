@@ -4,53 +4,44 @@ import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Embeddable
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "DEGREES")
+@Table(name = "DEGREE")
 public class Degree extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "degree_id")
+    @Column(name = "DEGREE_ID")
     private Long degreeId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certificate_id")
-    private Certificate certificate;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private User user;
-
     @Enumerated(EnumType.STRING)
-    @Column(name = "school_div")
     private SchoolDiv schoolDiv;
 
-    @Column(name = "school_name")
+    @Column(name = "SCHOOL_NAME")
     private String schoolName;
 
-    @Column(name = "entrance_year")
+    @Column(name = "ENTRANCE_YEAR")
     private String entranceYear;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "entrance_div")
     private EntranceDiv entranceDiv;
 
-    @Column(name = "graduate_year")
+    @Column(name = "GRADUATE_YEAR")
     private String graduateYear;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "graduate_div")
     private GraduateDiv graduateDiv;
 
-    @Column(name = "major")
+    @Column(name = "MAJOR")
     private String major;
 
-    @Column(name = "credit")
-    private float credit;
+    @Column(name = "CREDIT")
+    private BigDecimal credit;
 
-
-
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SPEC_ID")
+    private SpecCertificate specCertificate;
 }

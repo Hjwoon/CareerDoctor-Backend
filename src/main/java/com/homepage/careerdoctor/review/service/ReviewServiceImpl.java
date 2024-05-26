@@ -28,14 +28,14 @@ public class ReviewServiceImpl implements ReviewService{
                     .body(CustomApiResponse.createFailWithoutData(400, "존재하지 않는 소견서입니다"));
         }
 
-        // 존재하는 소견서라면 후기 작성 가능
-        Review newReivew = Review.builder()
-                .opinion(dto.getOpinion())
-                .bestPoint(dto.getBestPoint())
-                .reviewContent(dto.getReviewContent())
-                .build();
-
-        reviewRepository.save(newReivew);
+//        // 존재하는 소견서라면 후기 작성 가능
+//        Review newReivew = Review.builder()
+//                .opinion(dto.getOpinion())
+//                .bestPoint(dto.getBestPoint())
+//                .reviewContent(dto.getReviewContent())
+//                .build();
+//
+//        reviewRepository.save(newReivew);
 
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, null, "소견서 후기를 성공적으로 작성했습니다."));

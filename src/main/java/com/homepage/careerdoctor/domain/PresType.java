@@ -9,27 +9,21 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "REVIEW")
-public class Review extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "REVIEW_ID")
-    private Long reviewId;
+@Table(name = "PRES_TYPE")
+public class PresType extends BaseEntity {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "PRES_ID")
+    private Long presId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "REPORT_ID")
-    private SpecReport specReport;
+    @JoinColumn(name = "PRESCRIPTION_ID")
+    private Prescription prescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private OPINION opinion;
-
-    @Enumerated(EnumType.STRING)
-    private BestPoint bestPoint;
-
-    @Column(name = "REVIEW_CONTENT")
-    private String reviewContent;
+    private PresName presName;
 }
