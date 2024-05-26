@@ -25,4 +25,10 @@ public class SpecReportWriteDto {
     @Size(min = 1, message = "필요한 스펙을 1개 이상 선택해주세요.")
     private List<NeedSpec> needSpecs;
 
+//    public Need toEntity() {
+//        return Need.builder()
+//                .needName(needSpecs)
+//                .build();
+//    }
+
 }

@@ -19,6 +19,4 @@ public class UserSignupDto {
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", message = "비밀번호 양식이 잘못되었습니다.")
     private String password;
 
-    @NotEmpty(message = "비밀번호를 재입력해주세요.")
-    private String checkPw;
 }

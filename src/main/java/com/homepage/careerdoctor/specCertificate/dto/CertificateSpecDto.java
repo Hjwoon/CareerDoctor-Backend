@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.specCertificate.dto;
 
+import com.homepage.careerdoctor.domain.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SertificateSpecDto {
+public class CertificateSpecDto {
     @NotEmpty(message = "이름을 작성해주세요.")
     private String userId;
 

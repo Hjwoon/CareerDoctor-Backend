@@ -30,12 +30,6 @@ public class UserServiceImpl implements UserService{
         }
 
 
-        // 비밀번호와 비밀번호 확인이 일치하지 않는 경우
-        if (!(userSignupDto.getPassword().equals(userSignupDto.getCheckPw()))) {
-            return ResponseEntity.status(400)
-                    .body(CustomApiResponse.createFailWithoutData(400, "비밀번호가 일치하지 않습니다."));
-        }
-
 
         User newuser = User.builder()
                 .userId(userSignupDto.getUserId())

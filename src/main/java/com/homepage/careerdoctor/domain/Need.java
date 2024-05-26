@@ -11,20 +11,21 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "NEEDSPECS")
+@Table(name = "NEED")
 public class Need extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "need")
+    @Column(name = "NEED_ID")
     private Long needId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "REPORT_ID")
     private SpecReport specReport;
 
-    @ElementCollection(targetClass = NeedSpec.class)
-    @CollectionTable(name = "need_specs", joinColumns = @JoinColumn(name = "need_id"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private User user;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "need_spec")
-    private List<NeedSpec> needSpecs;
+    private NeedName needName;
 }

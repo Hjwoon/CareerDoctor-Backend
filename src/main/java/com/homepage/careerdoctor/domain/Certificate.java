@@ -9,24 +9,21 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "CERTIFICATES")
+@Table(name = "CERTIFICATE")
 public class Certificate extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "certificate_id")
+    @Column(name = "CERTIFICATE_ID")
     private Long certificateId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spec_id")
+    @JoinColumn(name = "SPEC_ID")
     private SpecCertificate specCertificate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-    @Column(name = "certificate_name")
+    @Column(name = "CERTIFICATE_NAME")
     private String certificateName;
-
-
-
 
 }
