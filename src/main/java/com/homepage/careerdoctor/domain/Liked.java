@@ -9,23 +9,22 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "ETCS")
-public class Etc extends BaseEntity {
+@Table(name = "LIKED")
+public class Liked extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "etc_id")
-    private Long etcId;
+    @Column(name = "LIKE_ID")
+    private Long likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spec_id")
-    private SpecCertificate specCertificate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-    @Column(name = "etc_name")
-    private String etcName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POST_ID")
+    private Post post;
 
+    @Column(name = "LIKE_COUNT")
+    private int likeCount;
 
 
 

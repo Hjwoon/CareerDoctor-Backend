@@ -1,6 +1,6 @@
 package com.homepage.careerdoctor.specCertificate.controller;
 
-import com.homepage.careerdoctor.specCertificate.dto.SertificateSpecDto;
+import com.homepage.careerdoctor.specCertificate.dto.CertificateSpecDto;
 import com.homepage.careerdoctor.specCertificate.service.SpecCertificateServiceImpl;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ public class SpecCertificateController {
 
     // 스펙 작성하기
     @PostMapping("/write-spec")
-    private ResponseEntity<CustomApiResponse<?>> sertificateSpec(@Valid @RequestBody SertificateSpecDto dto) {
-        return specCertificateService.sertificateSpec(dto);
+    private ResponseEntity<CustomApiResponse<?>> certificateSpec(@Valid @RequestBody CertificateSpecDto dto) {
+        return specCertificateService.certificateSpec(dto);
     }
 }

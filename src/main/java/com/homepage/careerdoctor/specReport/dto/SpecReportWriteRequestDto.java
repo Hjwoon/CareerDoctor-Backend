@@ -1,7 +1,6 @@
 package com.homepage.careerdoctor.specReport.dto;
 
 import com.homepage.careerdoctor.domain.Need;
-import com.homepage.careerdoctor.domain.NeedSpec;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -14,7 +13,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpecReportWriteDto {
+public class SpecReportWriteRequestDto {
+    private String writerId;
+
     @NotEmpty(message = "소견서 제목을 작성해주세요.")
     private String reportTitle;
 
@@ -23,6 +24,7 @@ public class SpecReportWriteDto {
     private String reportContent;
 
     @Size(min = 1, message = "필요한 스펙을 1개 이상 선택해주세요.")
-    private List<NeedSpec> needSpecs;
+    private List<NeedDto> needs;
+
 
 }

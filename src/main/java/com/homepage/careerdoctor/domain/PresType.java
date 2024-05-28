@@ -9,27 +9,21 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "LANGUAGES")
-public class Language extends BaseEntity {
+@Table(name = "PRES_TYPE")
+public class PresType extends BaseEntity {
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "language_id")
-    private Long languageId;
+    @Column(name = "PRES_ID")
+    private Long presId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spec_id")
-    private SpecCertificate specCertificate;
+    @JoinColumn(name = "PRESCRIPTION_ID")
+    private Prescription prescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "language_name")
-    private LanguageName languageName;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "language_level")
-    private LanguageLevel languageLevel;
-
-
+    private PresName presName;
 }

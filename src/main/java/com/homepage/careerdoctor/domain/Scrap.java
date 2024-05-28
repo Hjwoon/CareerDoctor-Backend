@@ -9,24 +9,21 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "ACTIVITYS")
-public class Activity extends BaseEntity {
+@Table(name = "SCRAP")
+public class Scrap extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "activity_id")
-    private Long activityId;
+    @Column(name = "SCRAP")
+    private Long scrapId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spec_id")
-    private SpecCertificate specCertificate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-    @Column(name = "activity_name")
-    private String activityName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "POST_ID")
+    private Post post;
 
-
-
+    @Column(name = "SCRAP_COUNT")
+    private int scrapCount;
 
 }

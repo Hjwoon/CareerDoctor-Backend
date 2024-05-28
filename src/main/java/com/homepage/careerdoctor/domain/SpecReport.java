@@ -3,32 +3,43 @@ package com.homepage.careerdoctor.domain;
 import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "SPEC_REPORTS")
+@Table(name = "SPEC_REPORT")
 public class SpecReport extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "report_id")
+    @Column(name = "REPORT_ID")
     private Long reportId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private User user;
+    @Column(name = "WRITER_ID")
+    private String writerId;
 
-    @Column(name = "report_title")
+    @Column(name = "REPORT_TITLE")
     private String reportTitle;
 
-    @Column(name = "report_content")
+    @Column(name = "REPORT_CONTENT")
     private String reportContent;
 
-    @OneToOne(mappedBy = "specReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Review review;
 
-    @OneToOne(mappedBy = "specReport", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Need need;
+    @OneToMany(mappedBy = "specReport")
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "specReport")
+    private List<Need> needs;
+
+    // 추가: User와의 관계 정의
+    @ManyToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private User user;
+
+    public void changeNeed(List<Need> needs) {
+        this.needs = needs;
+    }
 }

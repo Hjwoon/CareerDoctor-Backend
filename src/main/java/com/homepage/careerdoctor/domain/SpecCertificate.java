@@ -11,50 +11,71 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "SPEC_CERTIFICATES")
+@Table(name = "SPEC_CERTIFICATE")
 public class SpecCertificate extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "spec_id")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "SPEC_ID")
     private Long specId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-    @Embedded
-    private Degree degree;
+    @Column(name = "IS_PUBLIC")
+    private boolean isPublic;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Language> languages;
-
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Certificate> certificates;
-
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Activity> activities;
-
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Career> careers;
-
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Etc> etcs;
-
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
 
-    @Column(name = "birth") // ex) 20241209
+    @Column(name = "BIRTH")
     private String birth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "level")
-    private Level level;
+    private SchoolDiv schoolDiv;
 
-    @Column(name = "is_public")
-    private boolean isPublic;
+    @Column(name = "ENTRANCE_YEAR")
+    private String entranceYear;
 
+    @Enumerated(EnumType.STRING)
+    private EntranceDiv entranceDiv;
+
+    @Enumerated(EnumType.STRING)
+    private GraduateDiv graduateDiv;
+
+    @Column(name = "MAJOR")
+    private String major;
+
+    @Column(name = "AVG_CREDIT")
+    private Double avgCredit;
+
+    @ElementCollection
+    @CollectionTable(name = "CERTIFICATES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "CERTIFICATE_NAME")
+    private List<String> certificates;
+
+    @ElementCollection
+    @CollectionTable(name = "ACTIVITIES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "ACTIVITY_NAME")
+    private List<String> activities;
+
+    @ElementCollection
+    @CollectionTable(name = "LANGUAGES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "LANGUAGE_NAME")
+    private List<String> languages;
+
+    @ElementCollection
+    @CollectionTable(name = "CAREERS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "CAREER_NAME")
+    private List<String> careers;
+
+    @ElementCollection
+    @CollectionTable(name = "ETCS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "ETC_NAME")
+    private List<String> etcs;
 
 }
