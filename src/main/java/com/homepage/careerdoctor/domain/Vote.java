@@ -38,5 +38,4 @@ public class Vote extends BaseEntity {
             post.getVotes().add(this);
         }
     }
-
 }
