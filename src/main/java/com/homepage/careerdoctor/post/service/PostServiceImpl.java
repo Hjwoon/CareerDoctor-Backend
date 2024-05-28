@@ -3,10 +3,7 @@ package com.homepage.careerdoctor.post.service;
 import com.homepage.careerdoctor.domain.Post;
 import com.homepage.careerdoctor.domain.User;
 import com.homepage.careerdoctor.domain.Vote;
-import com.homepage.careerdoctor.post.dto.PostListDto;
-import com.homepage.careerdoctor.post.dto.PostWriteRequestDto;
-import com.homepage.careerdoctor.post.dto.PostWriteResponeDto;
-import com.homepage.careerdoctor.post.dto.VoteDto;
+import com.homepage.careerdoctor.post.dto.*;
 import com.homepage.careerdoctor.post.repostitory.PostRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
@@ -115,5 +112,31 @@ public class PostServiceImpl implements PostService{
 
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, myPostResponses, "내가 작성한 게시글 목록을 성공적으로 불러왔습니다."));
+    }
+
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> modifyPost(String userId, Long postId, PostModifyRequestDto.Req req) {
+        // 게시글 작성자와 현재 유저가 다른 사람일 경우
+        Long memberId = postRepository.findByPostId(postId).get().getUser().getMemberId();
+        String findUserId = userRepository.findById(memberId).get().getUserId();
+
+        if (!(findUserId.equals(userId))) {
+            return ResponseEntity.status(403)
+                    .body(CustomApiResponse.createFailWithoutData(403, "게시글은 본인만 수정할 수 있습니다."));
+        }
+
+        // 게시글 찾기
+        Optional<Post> findPost = postRepository.findByPostId(postId);
+
+        // 게시글 업데이트
+        Post post = findPost.get();
+        post.changeTitle(req.getPostTitle());
+        post.changeContent(req.getPostContent());
+        postRepository.flush();
+
+        PostModifyRequestDto.ModifyPost modifyPost = new PostModifyRequestDto.ModifyPost(post.getUpdatedAt());
+
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse.createSuccess(201, modifyPost, "게시글 수정을 완료했습니다."));
     }
 }

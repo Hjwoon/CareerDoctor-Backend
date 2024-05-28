@@ -49,4 +49,14 @@ public class Post extends BaseEntity {
             vote.changePost(this); // 양방향 관계 설정
         }
     }
+
+    // 게시글 제목을 수정하는 메소드
+    public void changeTitle(String postTitle) {
+        this.postTitle = postTitle;
+    }
+
+    // 게시물 내용을 수정하는 메소드
+    public void changeContent(String postContent) {
+        this.postContent = postContent;
+    }
 }

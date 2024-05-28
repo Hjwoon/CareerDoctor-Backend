@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.post.controller;
 
+import com.homepage.careerdoctor.post.dto.PostModifyRequestDto;
 import com.homepage.careerdoctor.post.dto.PostWriteRequestDto;
 import com.homepage.careerdoctor.post.service.PostServiceImpl;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
@@ -27,5 +28,10 @@ public class PostController {
     @GetMapping("/{userId}/myposts")
     private ResponseEntity<CustomApiResponse<?>> getMyPost(@PathVariable String userId) {
         return postService.getMyPost(userId);
+    }
+
+    @PutMapping("/posts/{userId}/{postId}")
+    private ResponseEntity<CustomApiResponse<?>> modifyPost(@PathVariable String userId, @PathVariable Long postId, @RequestBody PostModifyRequestDto.Req req) {
+        return postService.modifyPost(userId, postId, req);
     }
 }
