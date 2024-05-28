@@ -37,6 +37,7 @@ public class ReviewServiceImpl implements ReviewService{
                     .body(CustomApiResponse.createFailWithoutData(400, "존재하지 않는 소견서입니다"));
         }
 
+
         Long memberId = foundReport.get().getUser().getMemberId();
         Optional<User> user = userRepository.findById(memberId);
 
