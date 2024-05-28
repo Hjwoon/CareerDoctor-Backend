@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService{
         // 모든 확인 절차를 통과하였다면 로그인 허용
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), null,
+                .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), foundUser.get().getUserId(),
                         "로그인에 성공하였습니다."));
     }
 
