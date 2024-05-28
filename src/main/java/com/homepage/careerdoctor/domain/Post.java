@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,7 +34,8 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post")
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Vote> votes;
 
     // User와의 관계 정의
@@ -43,5 +45,8 @@ public class Post extends BaseEntity {
 
     public void changeVote(List<Vote> votes) {
         this.votes = votes;
+        for (Vote vote : votes) {
+            vote.changePost(this); // 양방향 관계 설정
+        }
     }
 }

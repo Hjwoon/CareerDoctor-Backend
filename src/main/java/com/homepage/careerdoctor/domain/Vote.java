@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,6 +19,7 @@ public class Vote extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID")
+    @JsonBackReference
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,6 +32,11 @@ public class Vote extends BaseEntity {
     @Column(name = "VOTE_COUNT")
     private int voteCount;
 
-
+    public void changePost(Post post) {
+        this.post = post;
+        if (!post.getVotes().contains(this)) {
+            post.getVotes().add(this);
+        }
+    }
 
 }

@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService{
                 .user(findUser.get())
                 .build();
 
-        List<VoteDto> voteDtos = requestDto.getVotes();
+        List<VoteDto> voteDtos = requestDto.getVote();
 
         List<Vote> votes = voteDtos.stream()
                 .map(voteDto -> Vote.builder()
@@ -55,6 +55,7 @@ public class PostServiceImpl implements PostService{
                         .post(newPost)
                         .build())
                 .collect(Collectors.toList());
+
 
         newPost.changeVote(votes);
         postRepository.save(newPost);
@@ -81,7 +82,7 @@ public class PostServiceImpl implements PostService{
                     .postTitle(post.getPostTitle())
                     .postContent(post.getPostContent())
                     .createdAt(post.getCreatedAt())
-                    .votes(post.getVotes())
+                    .vote(post.getVotes())
                     .likeCount(post.getLikeds().size())
                     .scrapCount(post.getScraps().size())
                     .build());
@@ -107,7 +108,7 @@ public class PostServiceImpl implements PostService{
                                 .postTitle(allPost.get(i).getPostTitle())
                                 .postContent(allPost.get(i).getPostContent())
                                 .createdAt(allPost.get(i).getCreatedAt())
-                                .votes(allPost.get(i).getVotes())
+                                .vote(allPost.get(i).getVotes())
                         .build());
             }
         }

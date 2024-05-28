@@ -22,7 +22,7 @@ public class PostListDto {
         private String postTitle;
         private String postContent;
         private LocalDateTime createdAt;
-        private List<Vote> votes;
+        private List<Vote> vote;
         private int likeCount;
         private int scrapCount;
     }

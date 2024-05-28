@@ -22,6 +22,6 @@ public class PostWriteRequestDto {
     private String postTitle;
     @NotBlank(message = "내용을 입력하세요.")
     private String postContent;
-    private List<VoteDto> votes;
+    private List<VoteDto> vote;
 
 }
