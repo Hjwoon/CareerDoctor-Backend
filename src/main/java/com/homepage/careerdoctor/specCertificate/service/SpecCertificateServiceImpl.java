@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +22,10 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
     // 스펙 진단하기
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> certificateSpec(CertificateSpecDto certificateSpecDto) {
-        // userId 있는 SpecCertificate 객체 생성 후 값 넣기
-        Optional<User> foundUser = userRepository.findByUserId(certificateSpecDto.getUserId()); // userID로 해당하는 회원이 있는지
-
 
         // 요청을 처리하고 올바른 응답을 반환하는 코드
 
         // 사용자가 진단하기에 요청한 정보들
-        String userId = certificateSpecDto.getUserId();
         String name = certificateSpecDto.getName();
         String birth = certificateSpecDto.getBirth();
         Gender gender = certificateSpecDto.getGender();
@@ -51,7 +44,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
         SpecCertificate savedSpecCertificate;
 
-        if (foundUser.isEmpty()) {
+        if (certificateSpecDto.getUserId() == null) { // 여기서 의미하는 userId는 User 테이블에 저장될 때 부여되는 Long 타입의 memberId를 의미
             // 비회원
             // userId = ""인 SpecCertificate 객체 생성 후 값 넣기
 
@@ -77,11 +70,13 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
         } else {
             // 회원
+            // userId 있는 SpecCertificate 객체 생성 후 값 넣기
+            Optional<User> foundUser = userRepository.findByUserId(certificateSpecDto.getUserId()); // userID로 해당하는 회원이 있는지
 
             // userId가 비어있는 SpecCertificate
             SpecCertificate createUserSpecCertificate = SpecCertificate.builder()
                     // get메소드로 실제 엔티티를 가져옴. get 호출을 해야 실제 엔티티를 넣을 수 있음
-                    .user(foundUser.get()) // get메소드 대신 orElse(null)을 사용하여 실제 엔티티를 가져옴
+                    .user(foundUser.orElse(null)) // get메소드 대신 orElse(null)을 사용하여 실제 엔티티를 가져옴
                     .name(name)
                     .birth(birth)
                     .gender(gender)
@@ -117,10 +112,5 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
                 .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), responseData,
                         "스펙 진단 받기 입력을 성공했습니다."));
 
-        /*// 예상치 못한 다른 예외가 발생한 경우 500 오류 응답 반환
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(CustomApiResponse.createFailWithoutData(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Server Error : An unexpected error occurred"));
-
-*/
     }
 }

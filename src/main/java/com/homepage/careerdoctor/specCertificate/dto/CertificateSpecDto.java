@@ -1,9 +1,6 @@
 package com.homepage.careerdoctor.specCertificate.dto;
 
-import com.homepage.careerdoctor.domain.EntranceDiv;
-import com.homepage.careerdoctor.domain.Gender;
-import com.homepage.careerdoctor.domain.GraduateDiv;
-import com.homepage.careerdoctor.domain.SchoolDiv;
+import com.homepage.careerdoctor.domain.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
