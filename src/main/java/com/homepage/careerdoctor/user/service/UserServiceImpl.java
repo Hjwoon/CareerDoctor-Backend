@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService{
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), foundUser.get().getUserId(),
-                        "로그인에 성공하였습니다."));
+                        "로그인을 성공하였습니다."));
     }
 
     // 일치하는 회원이 없을 경우 404 에러 반환
