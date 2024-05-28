@@ -38,4 +38,8 @@ public class SpecReport extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private User user;
+
+    public void changeNeed(List<Need> needs) {
+        this.needs = needs;
+    }
 }

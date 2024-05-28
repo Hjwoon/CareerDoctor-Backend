@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -35,15 +36,32 @@ public class SpecReportServiceImpl implements SpecReportService{
     @Override
     public ResponseEntity<CustomApiResponse<?>> writeReport(Long specId, SpecReportWriteRequestDto dto) {
         // 존재하지 않는 진단서라면 실패 반환하는 로직 추가
+        Optional<SpecCertificate> findCertificate = specRepository.findBySpecId(specId);
 
+        if (findCertificate.isEmpty()) {
+            return ResponseEntity.status(201)
+                    .body(CustomApiResponse.createSuccess(400, null, "존재하지 않는 스펙 진단서입니다."));
+        }
+
+        User user = findCertificate.get().getUser();
 
         // 존재하는 진단서라면 소견서 작성
         SpecReport newReport = SpecReport.builder()
+                .user(user)
                 .writerId(dto.getWriterId())
                 .reportTitle(dto.getReportTitle())
                 .reportContent(dto.getReportContent())
-                .needs(dto.getNeeds())
                 .build();
+
+        // Need 객체를 생성하고 SpecReport와 연관을 설정
+        List<Need> needs = dto.getNeeds().stream()
+                .map(needDto -> Need.builder()
+                        .specReport(newReport)
+                        .needSpec(needDto.getNeedSpec())
+                        .build())
+                .collect(Collectors.toList());
+
+        newReport.changeNeed(needs); // SpecReport에 Need 리스트를 설정
 
         specReportRepository.save(newReport); // 새 소견서 저장
 
@@ -57,19 +75,23 @@ public class SpecReportServiceImpl implements SpecReportService{
     }
 
     // 소견서 원하는 사람들 목록 보기
+    // 리스판스 수정
     @Override
     public ResponseEntity<CustomApiResponse<?>> getReports() {
 
-        // 진단서 받은 후 작성
         List<SpecCertificate> specCertificates = specRepository.findAll();
-        List<ReportWantUserListDto.UserResponse> userResponses = new ArrayList<>();
+        List<ReportWantUserListDto> userResponses = new ArrayList<>();
 
         for (SpecCertificate specCertificate : specCertificates) {
-            userResponses.add(ReportWantUserListDto.UserResponse.builder()
-                            .userId(specCertificate.getName())
+
+            Long memberId = specCertificate.getUser().getMemberId();
+            String userId = userRepository.findById(memberId).get().getUserId();
+
+            userResponses.add(ReportWantUserListDto.builder()
+                            .userId(userId)
                             .birth(specCertificate.getBirth())
                             .gender(specCertificate.getGender())
-                            .level(specCertificate.getLevel())
+                            .level(specCertificate.getUser().getSpecLevel())
                             .build());
         }
 

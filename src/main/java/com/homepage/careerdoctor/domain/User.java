@@ -25,17 +25,14 @@ public class User extends BaseEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Level level;
-
-
-    @OneToMany(mappedBy = "user")
-    private List<Liked> likeds;
+    private SpecLevel specLevel;
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SpecCertificate> certificates;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID", referencedColumnName = "MEMBER_ID")
+    private SpecCertificate certificates; // 스펙 진단서와 일대일
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<SpecReport> specReports;
@@ -51,19 +48,6 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Vote> votes;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Activity> activities;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Career> careers;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Language> languages;
-
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Etc> etcs;
 
     @OneToMany(mappedBy = "user")
     private List<Need> needs;

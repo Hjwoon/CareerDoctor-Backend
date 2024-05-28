@@ -19,6 +19,13 @@ public class SpecCertificate extends BaseEntity {
     @Column(name = "SPEC_ID")
     private Long specId;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MEMBER_ID")
+    private User user;
+
+    @Column(name = "IS_PUBLIC")
+    private boolean isPublic;
+
     @Column(name = "NAME")
     private String name;
 
@@ -29,31 +36,46 @@ public class SpecCertificate extends BaseEntity {
     private Gender gender;
 
     @Enumerated(EnumType.STRING)
-    private Level level;
+    private SchoolDiv schoolDiv;
 
-    @Column(name = "IS_PUBLIC")
-    private boolean isPublic;
+    @Column(name = "ENTRANCE_YEAR")
+    private String entranceYear;
 
-    @OneToOne(mappedBy = "specCertificate", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Degree degree;
+    @Enumerated(EnumType.STRING)
+    private EntranceDiv entranceDiv;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Certificate> certificates;
+    @Enumerated(EnumType.STRING)
+    private GraduateDiv graduateDiv;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Activity> activities;
+    @Column(name = "MAJOR")
+    private String major;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Language> languages;
+    @Column(name = "AVG_CREDIT")
+    private Double avgCredit;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Career> careers;
+    @ElementCollection
+    @CollectionTable(name = "CERTIFICATES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "CERTIFICATE_NAME")
+    private List<String> certificates;
 
-    @OneToMany(mappedBy = "specCertificate")
-    private List<Etc> etcs;
+    @ElementCollection
+    @CollectionTable(name = "ACTIVITIES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "ACTIVITY_NAME")
+    private List<String> activities;
 
-    @ManyToOne
-    @JoinColumn(name = "MEMBER_ID")
-    private User user;
+    @ElementCollection
+    @CollectionTable(name = "LANGUAGES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "LANGUAGE_NAME")
+    private List<String> languages;
+
+    @ElementCollection
+    @CollectionTable(name = "CAREERS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "CAREER_NAME")
+    private List<String> careers;
+
+    @ElementCollection
+    @CollectionTable(name = "ETCS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @Column(name = "ETC_NAME")
+    private List<String> etcs;
 
 }

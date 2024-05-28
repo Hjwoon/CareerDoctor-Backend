@@ -24,7 +24,7 @@ public class SpecReportWriteRequestDto {
     private String reportContent;
 
     @Size(min = 1, message = "필요한 스펙을 1개 이상 선택해주세요.")
-    private List<Need> needs;
+    private List<NeedDto> needs;
 
 
 }

@@ -1,7 +1,7 @@
 package com.homepage.careerdoctor.specReport.dto;
 
-import com.homepage.careerdoctor.domain.Level;
 import com.homepage.careerdoctor.domain.Need;
+import com.homepage.careerdoctor.domain.SpecLevel;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
@@ -20,7 +20,7 @@ public class SpecReportListDto {
         @NotEmpty
         private Long reportId;
         private String writerId; // 소견서 써준 사람
-        private Level level;
+        private SpecLevel level;
         private String reportTitle;
         private String reportContent;
         private List<Need> needs;

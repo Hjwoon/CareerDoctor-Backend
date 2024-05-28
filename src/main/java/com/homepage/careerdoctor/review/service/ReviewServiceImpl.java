@@ -2,11 +2,14 @@ package com.homepage.careerdoctor.review.service;
 
 import com.homepage.careerdoctor.domain.Review;
 import com.homepage.careerdoctor.domain.SpecReport;
+import com.homepage.careerdoctor.domain.User;
 import com.homepage.careerdoctor.review.dto.ReviewListDto;
 import com.homepage.careerdoctor.review.dto.ReviewWriteRequestDto;
 import com.homepage.careerdoctor.review.repository.ReviewRepository;
 import com.homepage.careerdoctor.specReport.repository.SpecReportRepository;
+import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService{
     private final ReviewRepository reviewRepository;
     private final SpecReportRepository specReportRepository;
+    private final UserRepository userRepository;
 
     @Override
     public ResponseEntity<CustomApiResponse<?>> writeReview(Long reportId, ReviewWriteRequestDto dto) {
@@ -32,7 +37,12 @@ public class ReviewServiceImpl implements ReviewService{
                     .body(CustomApiResponse.createFailWithoutData(400, "존재하지 않는 소견서입니다"));
         }
 
+        Long memberId = foundReport.get().getUser().getMemberId();
+        Optional<User> user = userRepository.findById(memberId);
+
         Review review = Review.builder()
+                .specReport(foundReport.get())
+                .user(user.get())
                 .opinion(dto.getOpinion())
                 .bestPoint(dto.getBestPoint())
                 .reviewContent(dto.getReviewContent())

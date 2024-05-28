@@ -1,38 +1,126 @@
 package com.homepage.careerdoctor.specCertificate.service;
 
-import com.homepage.careerdoctor.domain.SpecCertificate;
+import com.homepage.careerdoctor.domain.*;
 import com.homepage.careerdoctor.specCertificate.dto.CertificateSpecDto;
 import com.homepage.careerdoctor.specCertificate.repository.SpecRepository;
+import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SpecCertificateServiceImpl implements SpecCertificateService {
     private final SpecRepository specRepository;
+    private final UserRepository userRepository;
 
     // 스펙 진단하기
-    @Override
+    @Transactional
     public ResponseEntity<CustomApiResponse<?>> certificateSpec(CertificateSpecDto certificateSpecDto) {
-
-        //Optional<SpecCertificate> foundSpec = specRepository.findByUserId(certificateSpecDto.getUserId());
-
-        // userId가 ""(null)값이 아니라면, 회원
-
-        // 로그인된 상태 -> 내 스펙에 저장 // userId를 DB에 존재하는지 확인
-        // 1. 사용자가 스펙 진단하기에 요청한 아이디가 DB에 존재하는지 확인
+        // userId 있는 SpecCertificate 객체 생성 후 값 넣기
+        Optional<User> foundUser = userRepository.findByUserId(certificateSpecDto.getUserId()); // userID로 해당하는 회원이 있는지
 
 
-        //userId가 ""(null, 프론트에서 requestBody의 userId로 넘겨준 값)값이라면, 비회원
-        // 로그인 안 된 상태 -> 진단하기 후 유저 아이디가 없는 스펙 DB에 저장
+        // 요청을 처리하고 올바른 응답을 반환하는 코드
 
-        return ResponseEntity.status(201)
-                .body(CustomApiResponse.createSuccess(201, null, "소견서 진단을 성공적으로 작성했습니다."));
+        // 사용자가 진단하기에 요청한 정보들
+        String userId = certificateSpecDto.getUserId();
+        String name = certificateSpecDto.getName();
+        String birth = certificateSpecDto.getBirth();
+        Gender gender = certificateSpecDto.getGender();
+        SchoolDiv schoolDiv = certificateSpecDto.getSchoolDiv();
+        String entranceYear = certificateSpecDto.getEntranceYear();
+        EntranceDiv entranceDiv = certificateSpecDto.getEntranceDiv();
+        GraduateDiv graduateDiv = certificateSpecDto.getGraduateDiv();
+        String major = certificateSpecDto.getMajor();
+        Double avgCredit = certificateSpecDto.getAvgCredit();
+        List<String> certificates = certificateSpecDto.getCertificates();
+        List<String> activities = certificateSpecDto.getActivities();
+        List<String> languages = certificateSpecDto.getLanguages();
+        List<String> careers = certificateSpecDto.getCareers();
+        List<String> etcs = certificateSpecDto.getEtcs();
 
 
+        SpecCertificate savedSpecCertificate;
+
+        if (foundUser.isEmpty()) {
+            // 비회원
+            // userId = ""인 SpecCertificate 객체 생성 후 값 넣기
+
+            // userId가 비어있는 SpecCertificate
+            SpecCertificate createNoUserIdSpecCertificate = SpecCertificate.builder()
+                    .user(null)
+                    .name(name)
+                    .birth(birth)
+                    .gender(gender)
+                    .schoolDiv(schoolDiv)
+                    .entranceYear(entranceYear)
+                    .entranceDiv(entranceDiv)
+                    .graduateDiv(graduateDiv)
+                    .major(major)
+                    .avgCredit(avgCredit)
+                    .certificates(certificates)
+                    .activities(activities)
+                    .languages(languages)
+                    .careers(careers)
+                    .etcs(etcs)
+                    .build();
+            savedSpecCertificate = specRepository.save(createNoUserIdSpecCertificate); // 비회원 스펙 저장
+
+        } else {
+            // 회원
+
+            // userId가 비어있는 SpecCertificate
+            SpecCertificate createUserSpecCertificate = SpecCertificate.builder()
+                    // get메소드로 실제 엔티티를 가져옴. get 호출을 해야 실제 엔티티를 넣을 수 있음
+                    .user(foundUser.get()) // get메소드 대신 orElse(null)을 사용하여 실제 엔티티를 가져옴
+                    .name(name)
+                    .birth(birth)
+                    .gender(gender)
+                    .schoolDiv(schoolDiv)
+                    .entranceYear(entranceYear)
+                    .entranceDiv(entranceDiv)
+                    .graduateDiv(graduateDiv)
+                    .major(major)
+                    .avgCredit(avgCredit)
+                    .certificates(certificates)
+                    .activities(activities)
+                    .languages(languages)
+                    .careers(careers)
+                    .etcs(etcs)
+                    .build();
+            savedSpecCertificate = specRepository.save(createUserSpecCertificate); // 회원 스펙 저장
+        }
+
+        // 에러 코드 400
+        // 필수 필드 유효성 검사
+            /*if (name == null || name.isEmpty() || birth == null || birth.isEmpty() || gender == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(CustomApiResponse.createFailWithoutData(HttpStatus.BAD_REQUEST.value(),
+                                "이름, 생년월일, 성별은 필수항목입니다."));
+            }*/
+
+        // 응답 데이터 생성 // 응답 반환할 때 DTO 사용
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("specId", savedSpecCertificate.getSpecId());
+        responseData.put("createdAt", savedSpecCertificate.getCreatedAt().toString());
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), responseData,
+                        "스펙 진단 받기 입력을 성공했습니다."));
+
+        /*// 예상치 못한 다른 예외가 발생한 경우 500 오류 응답 반환
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(CustomApiResponse.createFailWithoutData(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Server Error : An unexpected error occurred"));
+
+*/
     }
 }

@@ -40,4 +40,8 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private User user;
+
+    public void changeVote(List<Vote> votes) {
+        this.votes = votes;
+    }
 }

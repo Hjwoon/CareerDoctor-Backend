@@ -1,60 +1,65 @@
 package com.homepage.careerdoctor.specCertificate.dto;
 
-import com.homepage.careerdoctor.domain.*;
+import com.homepage.careerdoctor.domain.EntranceDiv;
+import com.homepage.careerdoctor.domain.Gender;
+import com.homepage.careerdoctor.domain.GraduateDiv;
+import com.homepage.careerdoctor.domain.SchoolDiv;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificateSpecDto {
-
     private String userId;
 
-    @NotEmpty(message = "생일을 입력해주세요.")
+    // 필수 항목 세 가지: 이름, 생년월일, 성별
+    @NotEmpty(message = "이름을 입력해주세요.")
+    private String name;
+
+    @NotEmpty(message = "생년월일을 입력해주세요.")
     private String birth;
 
-    @NotEmpty(message = "성별을 입력해주세요.")
+    @NotNull(message = "성별을 입력해주세요.") // @NotNull은 모든 타입에서 사용 가능
     private Gender gender;
 
-    @NotEmpty(message = "학력을 입력해주세요.")
+    // 학력
     private SchoolDiv schoolDiv;
 
-    @NotEmpty(message = "입학년월을 입력해주세요.")
+    // 입학년월
     private String entranceYear;
 
-    @NotEmpty(message = "입학 구분을 입력해주세요.")
+    // 입학 구분
     private EntranceDiv entranceDiv;
 
-    @NotEmpty(message = "졸업(예정)년월을 입력해주세요.")
+    // 졸업(예정)년월
     private GraduateDiv graduateDiv;
 
-    @NotEmpty(message = "전공을 입력해주세요.")
+    // 전공
     private String major;
 
-    @NotEmpty(message = "학점을 입력해주세요.")
+    // 학점
     private Double avgCredit;
 
-    @NotEmpty(message = "보유 자격증을 입력해주세요.")
-    private ArrayList<String> certificate;
-    private String certificateName;
+    // 보유 자격증
+    private List<String> certificates;
 
-    @NotEmpty(message = "대외활동을 입력해주세요.")
-    private ArrayList<String> activity;
-    private String activityName;
+    // 대외활동
+    private List<String> activities;
 
-    @NotEmpty(message = "언어를 입력해주세요.")
-    private ArrayList<String> language;
+    // 언어
+    private List<String> languages;
 
-    @NotEmpty(message = "경력을 입력해주세요.")
-    private ArrayList<Career> careers;
+    // 경력
+    private List<String> careers;
 
-    @NotEmpty(message = "기타를 입력해주세요.")
-    private String etc;
+    // 기타
+    private List<String> etcs;
 }

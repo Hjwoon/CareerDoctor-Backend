@@ -29,8 +29,6 @@ public class UserServiceImpl implements UserService{
                     .body(CustomApiResponse.createFailWithoutData(400, "중복된 아이디가 존재합니다."));
         }
 
-
-
         User newuser = User.builder()
                 .userId(userSignupDto.getUserId())
                 .password(userSignupDto.getPassword())
