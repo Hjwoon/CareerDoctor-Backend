@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.post.service;
 
+import com.homepage.careerdoctor.post.dto.PostDeleteRequestDto;
 import com.homepage.careerdoctor.post.dto.PostModifyRequestDto;
 import com.homepage.careerdoctor.post.dto.PostWriteRequestDto;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
@@ -13,4 +14,6 @@ public interface PostService {
     ResponseEntity<CustomApiResponse<?>> getMyPost(String userId);
 
     ResponseEntity<CustomApiResponse<?>> modifyPost(String userId, Long postId, PostModifyRequestDto.Req req);
+
+    ResponseEntity<CustomApiResponse<?>> deletePost(PostDeleteRequestDto dto);
 }

@@ -1,9 +1,11 @@
 package com.homepage.careerdoctor.post.controller;
 
+import com.homepage.careerdoctor.post.dto.PostDeleteRequestDto;
 import com.homepage.careerdoctor.post.dto.PostModifyRequestDto;
 import com.homepage.careerdoctor.post.dto.PostWriteRequestDto;
 import com.homepage.careerdoctor.post.service.PostServiceImpl;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +35,10 @@ public class PostController {
     @PutMapping("/posts/{userId}/{postId}")
     private ResponseEntity<CustomApiResponse<?>> modifyPost(@PathVariable String userId, @PathVariable Long postId, @RequestBody PostModifyRequestDto.Req req) {
         return postService.modifyPost(userId, postId, req);
+    }
+
+    @DeleteMapping("/posts")
+    private ResponseEntity<CustomApiResponse<?>> deletePost(@RequestBody @Valid PostDeleteRequestDto dto) {
+        return postService.deletePost(dto);
     }
 }

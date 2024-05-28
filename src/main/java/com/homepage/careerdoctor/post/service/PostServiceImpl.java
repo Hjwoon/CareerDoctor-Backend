@@ -139,4 +139,31 @@ public class PostServiceImpl implements PostService{
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, modifyPost, "게시글 수정을 완료했습니다."));
     }
+
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> deletePost(PostDeleteRequestDto dto) {
+        // 게시글이 존재하는지
+        Optional<Post> findPost = postRepository.findByPostId(dto.getPostId());
+
+        if (findPost.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(CustomApiResponse.createFailWithoutData(404, "게시글이 존재하지 않습니다."));
+        }
+
+        // 현재 유저와 게시글 작성자가 같은지
+        String postUserId = findPost.get().getUser().getUserId();
+
+        if (!(postUserId.equals(dto.getUserId()))) { // 다르면
+            return ResponseEntity.status(400)
+                    .body(CustomApiResponse.createFailWithoutData(400, "게시글 작성자가 아닙니다."));
+
+        }
+
+        // 게시글 삭제
+
+        postRepository.delete(findPost.get());
+
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse.createSuccess(201, null, "게시글이 삭제되었습니다."));
+    }
 }
