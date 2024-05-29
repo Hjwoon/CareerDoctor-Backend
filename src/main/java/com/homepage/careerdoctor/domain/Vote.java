@@ -30,12 +30,19 @@ public class Vote extends BaseEntity {
     private String voteContent;
 
     @Column(name = "VOTE_COUNT")
-    private int voteCount;
+    private int voteCount = 0;
+
+    @Column(name = "PERCENT")
+    private double percent = 0;
 
     public void changePost(Post post) {
         this.post = post;
         if (!post.getVotes().contains(this)) {
             post.getVotes().add(this);
         }
+    }
+
+    public void changePercent(double percent) {
+        this.percent = percent;
     }
 }

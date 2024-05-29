@@ -73,6 +73,8 @@ public class PostServiceImpl implements PostService{
         List<Post> posts = postRepository.findAll();
 
         List<PostListDto.PostResponse> postResponses = new ArrayList<>();
+        int totalCount = 0;
+        int n = 0;
         for (Post post : posts) {
             postResponses.add(PostListDto.PostResponse.builder()
                     .userId(post.getUser().getUserId())
@@ -80,10 +82,34 @@ public class PostServiceImpl implements PostService{
                     .postContent(post.getPostContent())
                     .createdAt(post.getCreatedAt())
                     .vote(post.getVotes())
-                    .likeCount(post.getLikeds().size())
-                    .scrapCount(post.getScraps().size())
                     .build());
+
+            n++;
         }
+
+        for (int i = 0; i < posts.size(); i++) {
+            List<Vote> votes = posts.get(i).getVotes();
+            totalCount = 0;
+
+            // 첫 번째 루프에서 총 투표 수 계산
+            for (int j = 0; j < votes.size(); j++) {
+                totalCount += votes.get(j).getVoteCount();
+            }
+
+            // 두 번째 루프에서 퍼센트 계산
+            if (totalCount > 0) {
+                for (int j = 0; j < votes.size(); j++) {
+                    double percent = ((double) votes.get(j).getVoteCount() / totalCount) * 100;
+                    votes.get(j).changePercent(percent);
+                }
+            } else {
+                for (int j = 0; j < votes.size(); j++) {
+                    votes.get(j).changePercent(0);
+                }
+            }
+        }
+
+
         // 사용자에게 반환하기위한 최종 데이터
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, postResponses, "게시글 목록을 성공적으로 불러왔습니다."));
@@ -165,5 +191,21 @@ public class PostServiceImpl implements PostService{
 
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, null, "게시글이 삭제되었습니다."));
+    }
+
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> getPostDeatail(Long postId) {
+        Optional<Post> findPost = postRepository.findByPostId(postId);
+
+        PostListDto.PostResponse postResponse = new PostListDto.PostResponse();
+        postResponse.builder()
+                .userId(findPost.get().getUser().getUserId())
+                .postTitle(findPost.get().getPostTitle())
+                .postContent(findPost.get().getPostContent())
+                .createdAt(findPost.get().getCreatedAt())
+                .vote(findPost.get().getVotes())
+                .build();
+
+        return null;
     }
 }

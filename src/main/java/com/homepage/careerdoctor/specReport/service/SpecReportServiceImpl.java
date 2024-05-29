@@ -84,6 +84,10 @@ public class SpecReportServiceImpl implements SpecReportService{
 
         for (SpecCertificate specCertificate : specCertificates) {
 
+            if (specCertificate.getUser() == null) {
+                continue;
+            }
+
             Long memberId = specCertificate.getUser().getMemberId();
             String userId = userRepository.findById(memberId).get().getUserId();
 
@@ -113,21 +117,41 @@ public class SpecReportServiceImpl implements SpecReportService{
 
         // data로 반환할 DTO
         FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+        List<FeedbackToMeDto> feedbackToMeDtoList = new ArrayList<>();
 
-        // 후기의 유저 아이디와 현재 유저의 아이디가 같으면 그 아이디를 이용해 소견서 아이디를 찾는다.
-        // 찾은 소견서 아이디로 내게 피드백 해준 사람들을 찾는다.
-        for (int i = 0; i < reviews.size(); i++) {
-            if (reviews.get(i).getUser().getUserId() == findUser.get().getUserId()) {
-                Long myReportId = reviews.get(i).getSpecReport().getReportId();
-                Optional<SpecReport> myReport = specReportRepository.findByReportId(myReportId);
+        // 유저 아이디로 소견서 찾기
+        for (int i = 0; i < reports.size(); i++) {
+            String findUserId = specReportRepository.findAll().get(i).getUser().getUserId();
+            Long reportId = specReportRepository.findAll().get(i).getReportId();
+            Optional<SpecReport> myReport = specReportRepository.findByReportId(reportId);
 
-                feedbackList.setReportId(myReportId);
+            if (findUserId.equals(userId)) {
+                feedbackList.setReportId(reportId);
                 feedbackList.setReportTitle(myReport.get().getReportTitle());
                 feedbackList.setReportContent(myReport.get().getReportContent());
                 feedbackList.setNeeds(myReport.get().getNeeds());
                 feedbackList.setCreatedAt(myReport.get().getCreatedAt());
+
+                feedbackToMeDtoList.add(feedbackList);
             }
         }
+
+
+
+//        // 후기의 유저 아이디와 현재 유저의 아이디가 같으면 그 아이디를 이용해 소견서 아이디를 찾는다.
+//        // 찾은 소견서 아이디로 내게 피드백 해준 사람들을 찾는다.
+//        for (int i = 0; i < reviews.size(); i++) {
+//            if (reviews.get(i).getUser().getUserId() == findUser.get().getUserId()) {
+//                Long myReportId = reviews.get(i).getSpecReport().getReportId();
+//                Optional<SpecReport> myReport = specReportRepository.findByReportId(myReportId);
+//
+//                feedbackList.setReportId(myReportId);
+//                feedbackList.setReportTitle(myReport.get().getReportTitle());
+//                feedbackList.setReportContent(myReport.get().getReportContent());
+//                feedbackList.setNeeds(myReport.get().getNeeds());
+//                feedbackList.setCreatedAt(myReport.get().getCreatedAt());
+//            }
+//        }
 
         return ResponseEntity.status(201)
                 .body(CustomApiResponse

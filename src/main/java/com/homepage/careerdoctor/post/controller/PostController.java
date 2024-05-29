@@ -27,6 +27,10 @@ public class PostController {
         return postService.getPosts();
     }
 
+    @GetMapping("/posts/{postId}")
+    private ResponseEntity<CustomApiResponse<?>> getPostDetail(@PathVariable Long postId) {
+        return postService.getPostDeatail(postId);}
+
     @GetMapping("/{userId}/myposts")
     private ResponseEntity<CustomApiResponse<?>> getMyPost(@PathVariable String userId) {
         return postService.getMyPost(userId);
