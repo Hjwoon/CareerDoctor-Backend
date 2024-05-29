@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -46,17 +47,17 @@ public class CertificateSpecDto {
     private Double avgCredit;
 
     // 보유 자격증
-    private List<String> certificates;
+    private List<String> certificates = new ArrayList<>();
 
     // 대외활동
-    private List<String> activities;
+    private List<String> activities = new ArrayList<>();
 
     // 언어
-    private List<String> languages;
+    private List<String> languages = new ArrayList<>();
 
     // 경력
-    private List<String> careers;
+    private List<String> careers = new ArrayList<>();
 
     // 기타
-    private List<String> etcs;
+    private List<String> etcs = new ArrayList<>();
 }

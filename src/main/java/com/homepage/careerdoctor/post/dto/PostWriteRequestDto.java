@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -22,6 +23,6 @@ public class PostWriteRequestDto {
     private String postTitle;
     @NotBlank(message = "내용을 입력하세요.")
     private String postContent;
-    private List<VoteDto> vote;
+    private List<VoteDto> vote = new ArrayList<>();
 
 }

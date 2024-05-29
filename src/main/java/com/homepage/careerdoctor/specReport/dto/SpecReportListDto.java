@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,7 +24,7 @@ public class SpecReportListDto {
         private SpecLevel level;
         private String reportTitle;
         private String reportContent;
-        private List<Need> needs;
+        private List<Need> needs = new ArrayList<>();
         private LocalDateTime createdAt;
 
 

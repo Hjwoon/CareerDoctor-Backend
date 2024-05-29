@@ -4,6 +4,7 @@ import com.homepage.careerdoctor.domain.Need;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,6 @@ public class FeedbackToMeDto {
     private String writerLevel; // 소견서 써준 사람 레벨
     private String reportTitle;
     private String reportContent;
-    private List<Need> needs;
+    private List<Need> needs = new ArrayList<>();
     private LocalDateTime createdAt;
 }

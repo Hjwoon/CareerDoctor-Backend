@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -24,7 +25,7 @@ public class SpecReportWriteRequestDto {
     private String reportContent;
 
     @Size(min = 1, message = "필요한 스펙을 1개 이상 선택해주세요.")
-    private List<NeedDto> needs;
+    private List<NeedDto> needs = new ArrayList<>();
 
 
 }
