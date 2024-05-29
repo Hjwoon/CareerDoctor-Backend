@@ -179,7 +179,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
         if (!userSpec.getLanguages().isEmpty()) satisfiedSpecs++;
         if (!userSpec.getCareers().isEmpty()) satisfiedSpecs++;
 
-        String specLevel;
+        String specLevel; // 유저의 스펙 레벨
         if (satisfiedSpecs >= 4) {
             specLevel = "취뽀생";
         } else if (satisfiedSpecs == 3) {
