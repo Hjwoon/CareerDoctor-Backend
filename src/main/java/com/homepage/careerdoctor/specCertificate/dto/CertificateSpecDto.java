@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,6 +28,7 @@ public class CertificateSpecDto {
     private Gender gender;
 
     // 학력
+    @NotNull(message = "학력을 입력해주세요.")
     private SchoolDiv schoolDiv;
 
     // 입학년월
@@ -47,17 +47,17 @@ public class CertificateSpecDto {
     private Double avgCredit;
 
     // 보유 자격증
-    private List<String> certificates = new ArrayList<>();
+    private List<String> certificates;
 
     // 대외활동
-    private List<String> activities = new ArrayList<>();
+    private List<String> activities;
 
     // 언어
-    private List<String> languages = new ArrayList<>();
+    private List<String> languages;
 
     // 경력
-    private List<String> careers = new ArrayList<>();
+    private List<String> careers;
 
     // 기타
-    private List<String> etcs = new ArrayList<>();
+    private List<String> etcs;
 }

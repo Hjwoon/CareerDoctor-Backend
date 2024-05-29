@@ -97,11 +97,11 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
         // 에러 코드 400
         // 필수 필드 유효성 검사
-            /*if (name == null || name.isEmpty() || birth == null || birth.isEmpty() || gender == null) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(CustomApiResponse.createFailWithoutData(HttpStatus.BAD_REQUEST.value(),
-                                "이름, 생년월일, 성별은 필수항목입니다."));
-            }*/
+        if (name == null || name.isEmpty() || birth == null || birth.isEmpty() || gender == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(CustomApiResponse.createFailWithoutData(HttpStatus.BAD_REQUEST.value(),
+                            "이름, 생년월일, 성별은 필수항목입니다."));
+        }
 
         // 응답 데이터 생성 // 응답 반환할 때 DTO 사용
         Map<String, Object> responseData = new HashMap<>();

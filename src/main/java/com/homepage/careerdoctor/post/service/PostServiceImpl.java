@@ -197,6 +197,7 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public ResponseEntity<CustomApiResponse<?>> getPostDeatail(Long postId) {
+        // 게시글을 찾는다
         Optional<Post> findPost = postRepository.findById(postId);
 
         PostListDto.PostResponse postResponse = new PostListDto.PostResponse();
