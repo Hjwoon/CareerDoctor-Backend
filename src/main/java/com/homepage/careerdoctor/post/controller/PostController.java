@@ -41,6 +41,11 @@ public class PostController {
         return postService.modifyPost(userId, postId, req);
     }
 
+    @PutMapping("/plusVoteCount/{voteId}")
+    private ResponseEntity<CustomApiResponse<?>> plusVoteCount(@PathVariable Long voteId) {
+        return postService.plusVoteCount(voteId);
+    }
+
     @DeleteMapping("/posts")
     private ResponseEntity<CustomApiResponse<?>> deletePost(@RequestBody @Valid PostDeleteRequestDto dto) {
         return postService.deletePost(dto);

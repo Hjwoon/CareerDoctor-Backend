@@ -45,4 +45,8 @@ public class Vote extends BaseEntity {
     public void changePercent(double percent) {
         this.percent = percent;
     }
+
+    public void changeVoteCount(int voteCount) {
+        this.voteContent += 1;
+    }
 }

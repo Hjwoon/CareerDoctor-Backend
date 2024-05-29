@@ -54,7 +54,7 @@ public class SpecCertificate extends BaseEntity {
     private Double avgCredit;
 
     @ElementCollection
-    @CollectionTable(name = "CERTIFICATES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @CollectionTable(name = "CERTIFICATE", joinColumns = @JoinColumn(name = "SPEC_ID"))
     @Column(name = "CERTIFICATE_NAME")
     private List<String> certificates;
 

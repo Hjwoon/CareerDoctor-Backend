@@ -5,6 +5,7 @@ import com.homepage.careerdoctor.domain.User;
 import com.homepage.careerdoctor.domain.Vote;
 import com.homepage.careerdoctor.post.dto.*;
 import com.homepage.careerdoctor.post.repostitory.PostRepository;
+import com.homepage.careerdoctor.post.repostitory.VoteRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService{
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final VoteRepository voteRepository;
 
     @Override // 게시글(투표글) 작성
     public ResponseEntity<CustomApiResponse<?>> writePost(PostWriteRequestDto requestDto) {
@@ -195,9 +197,10 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public ResponseEntity<CustomApiResponse<?>> getPostDeatail(Long postId) {
-        Optional<Post> findPost = postRepository.findByPostId(postId);
+        Optional<Post> findPost = postRepository.findById(postId);
 
         PostListDto.PostResponse postResponse = new PostListDto.PostResponse();
+
         postResponse.builder()
                 .userId(findPost.get().getUser().getUserId())
                 .postTitle(findPost.get().getPostTitle())
@@ -206,6 +209,39 @@ public class PostServiceImpl implements PostService{
                 .vote(findPost.get().getVotes())
                 .build();
 
-        return null;
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse.createSuccess(201, postResponse, "게시글 상세보기를 성공했습니다."));
+
+    }
+
+    @Override
+    public ResponseEntity<CustomApiResponse<?>> plusVoteCount(Long voteId) {
+        Vote vote = voteRepository.findById(voteId).get();
+        Post post = vote.getPost();
+        List<VoteCountResponseDto> voteCountResponseDtos = new ArrayList<>();
+
+        int totalCount = 0;
+        int count = voteRepository.findById(voteId).get().getVoteCount();
+
+        for (int i = 0; i < post.getVotes().size(); i++) {
+            totalCount += post.getVotes().get(i).getVoteCount();
+        }
+
+        vote.changeVoteCount(count);
+
+        for (int i = 0; i < post.getVotes().size(); i++) {
+            double newPercent = post.getVotes().get(i).getVoteCount() / totalCount * 100;
+            post.getVotes().get(i).changePercent(newPercent);
+            voteCountResponseDtos.get(i).setPercent(newPercent);
+
+            if (i == voteId) {
+                voteCountResponseDtos.get(i).setVoteCount(count);
+
+            } else {
+                voteCountResponseDtos.get(i).setVoteCount(post.getVotes().get(i).getVoteCount());
+            }
+        }
+        return ResponseEntity.status(201)
+                .body(CustomApiResponse.createSuccess(201, voteCountResponseDtos, "투표 수가 1 증가하였습니다."));
     }
 }

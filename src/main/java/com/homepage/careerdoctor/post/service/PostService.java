@@ -18,4 +18,6 @@ public interface PostService {
     ResponseEntity<CustomApiResponse<?>> deletePost(PostDeleteRequestDto dto);
 
     ResponseEntity<CustomApiResponse<?>> getPostDeatail(Long postId);
+
+    ResponseEntity<CustomApiResponse<?>> plusVoteCount(Long voteId);
 }
