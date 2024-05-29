@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,8 @@ public class SpecReport extends BaseEntity {
     @OneToMany(mappedBy = "specReport")
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "specReport")
+    @OneToMany(mappedBy = "specReport", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Need> needs;
 
     // 추가: User와의 관계 정의

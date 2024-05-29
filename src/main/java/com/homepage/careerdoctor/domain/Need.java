@@ -1,5 +1,6 @@
 package com.homepage.careerdoctor.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.homepage.careerdoctor.util.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,7 @@ public class Need extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REPORT_ID")
+    @JsonBackReference
     private SpecReport specReport;
 
     @ManyToOne(fetch = FetchType.LAZY)

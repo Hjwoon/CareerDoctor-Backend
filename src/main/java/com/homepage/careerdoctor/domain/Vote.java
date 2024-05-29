@@ -47,6 +47,6 @@ public class Vote extends BaseEntity {
     }
 
     public void changeVoteCount(int voteCount) {
-        this.voteContent += 1;
+        this.voteCount = voteCount;
     }
 }

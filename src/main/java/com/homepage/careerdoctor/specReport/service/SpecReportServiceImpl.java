@@ -8,11 +8,13 @@ import com.homepage.careerdoctor.specReport.dto.FeedbackToMeDto;
 import com.homepage.careerdoctor.specReport.dto.ReportWantUserListDto;
 import com.homepage.careerdoctor.specReport.dto.SpecReportWriteRequestDto;
 import com.homepage.careerdoctor.specReport.dto.SpecReportWriteResponseDto;
+import com.homepage.careerdoctor.specReport.repository.NeedRepository;
 import com.homepage.careerdoctor.specReport.repository.SpecReportRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ public class SpecReportServiceImpl implements SpecReportService{
     private final UserRepository userRepository;
     private final SpecRepository specRepository;
     private final ReviewRepository reviewRepository;
+    private final NeedRepository needRepository;
 
 
     // 소견서 작성
@@ -57,13 +60,16 @@ public class SpecReportServiceImpl implements SpecReportService{
         List<Need> needs = dto.getNeeds().stream()
                 .map(needDto -> Need.builder()
                         .specReport(newReport)
+                        .user(user)
                         .needSpec(needDto.getNeedSpec())
                         .build())
                 .collect(Collectors.toList());
 
         newReport.changeNeed(needs); // SpecReport에 Need 리스트를 설정
 
+
         specReportRepository.save(newReport); // 새 소견서 저장
+
 
         SpecReportWriteResponseDto data = SpecReportWriteResponseDto.builder()
                 .reportId(newReport.getReportId())
@@ -104,59 +110,46 @@ public class SpecReportServiceImpl implements SpecReportService{
                         .createSuccess(201, userResponses, "피드백을 원하는 유저 목록을 불러오는데 성공했습니다."));
     }
 
-    // 나를 피드백 해준 사람들 목록 상세 보기
+    // 받은 피드백 목록 보기
     @Override
     public ResponseEntity<CustomApiResponse<?>> getAllMyReport(String userId) {
-
         // 현재 회원이 누구인지 DB에서 찾는다.
         Optional<User> findUser = userRepository.findByUserId(userId);
+        if (findUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(CustomApiResponse.createFailWithoutData(404, "User not found"));
+        }
+
         // 전체 소견서를 불러온다.
         List<SpecReport> reports = specReportRepository.findAll();
-        // 전체 후기를 불러온다.
-        List<Review> reviews = reviewRepository.findAll();
 
-        // data로 반환할 DTO
-        FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+        // data로 반환할 DTO 목록
         List<FeedbackToMeDto> feedbackToMeDtoList = new ArrayList<>();
 
-        // 유저 아이디로 소견서 찾기
-        for (int i = 0; i < reports.size(); i++) {
-            String findUserId = specReportRepository.findAll().get(i).getUser().getUserId();
-            Long reportId = specReportRepository.findAll().get(i).getReportId();
-            Optional<SpecReport> myReport = specReportRepository.findByReportId(reportId);
 
-            if (findUserId.equals(userId)) {
-                feedbackList.setReportId(reportId);
-                feedbackList.setReportTitle(myReport.get().getReportTitle());
-                feedbackList.setReportContent(myReport.get().getReportContent());
-                feedbackList.setNeeds(myReport.get().getNeeds());
-                feedbackList.setCreatedAt(myReport.get().getCreatedAt());
+        // 유저 아이디로 소견서 찾기
+        for (SpecReport report : reports) {
+            if (report.getUser().getUserId().equals(userId)) {
+
+                FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+                feedbackList.setReportId(report.getReportId());
+                feedbackList.setReportTitle(report.getReportTitle());
+                feedbackList.setReportContent(report.getReportContent());
+                feedbackList.setNeeds(report.getNeeds());
+                feedbackList.setCreatedAt(report.getCreatedAt());
+
+                User writer = report.getUser();
+                feedbackList.setWriterId(report.getWriterId());
+                feedbackList.setWriterLevel(writer.getSpecLevel());
 
                 feedbackToMeDtoList.add(feedbackList);
             }
         }
 
-
-
-//        // 후기의 유저 아이디와 현재 유저의 아이디가 같으면 그 아이디를 이용해 소견서 아이디를 찾는다.
-//        // 찾은 소견서 아이디로 내게 피드백 해준 사람들을 찾는다.
-//        for (int i = 0; i < reviews.size(); i++) {
-//            if (reviews.get(i).getUser().getUserId() == findUser.get().getUserId()) {
-//                Long myReportId = reviews.get(i).getSpecReport().getReportId();
-//                Optional<SpecReport> myReport = specReportRepository.findByReportId(myReportId);
-//
-//                feedbackList.setReportId(myReportId);
-//                feedbackList.setReportTitle(myReport.get().getReportTitle());
-//                feedbackList.setReportContent(myReport.get().getReportContent());
-//                feedbackList.setNeeds(myReport.get().getNeeds());
-//                feedbackList.setCreatedAt(myReport.get().getCreatedAt());
-//            }
-//        }
-
-        return ResponseEntity.status(201)
-                .body(CustomApiResponse
-                        .createSuccess(201, feedbackList, "나에게 피드백을 해준 유저 목록을 불러오는데 성공했습니다."));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), feedbackToMeDtoList, "나에게 피드백을 해준 유저 목록을 불러오는데 성공했습니다."));
     }
+
 
     // 피드백 해준 소견서 상세보기
     @Override

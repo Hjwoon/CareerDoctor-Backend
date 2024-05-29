@@ -217,31 +217,12 @@ public class PostServiceImpl implements PostService{
     @Override
     public ResponseEntity<CustomApiResponse<?>> plusVoteCount(Long voteId) {
         Vote vote = voteRepository.findById(voteId).get();
-        Post post = vote.getPost();
-        List<VoteCountResponseDto> voteCountResponseDtos = new ArrayList<>();
-
-        int totalCount = 0;
         int count = voteRepository.findById(voteId).get().getVoteCount();
-
-        for (int i = 0; i < post.getVotes().size(); i++) {
-            totalCount += post.getVotes().get(i).getVoteCount();
-        }
-
+        count++;
         vote.changeVoteCount(count);
+        voteRepository.save(vote);
 
-        for (int i = 0; i < post.getVotes().size(); i++) {
-            double newPercent = post.getVotes().get(i).getVoteCount() / totalCount * 100;
-            post.getVotes().get(i).changePercent(newPercent);
-            voteCountResponseDtos.get(i).setPercent(newPercent);
-
-            if (i == voteId) {
-                voteCountResponseDtos.get(i).setVoteCount(count);
-
-            } else {
-                voteCountResponseDtos.get(i).setVoteCount(post.getVotes().get(i).getVoteCount());
-            }
-        }
         return ResponseEntity.status(201)
-                .body(CustomApiResponse.createSuccess(201, voteCountResponseDtos, "투표 수가 1 증가하였습니다."));
+                .body(CustomApiResponse.createSuccess(201, count, "투표 수가 1 증가하였습니다."));
     }
 }
