@@ -201,7 +201,7 @@ public class PostServiceImpl implements PostService{
 
         PostListDto.PostResponse postResponse = new PostListDto.PostResponse();
 
-        postResponse.builder()
+        postResponse = postResponse.builder()
                 .userId(findPost.get().getUser().getUserId())
                 .postTitle(findPost.get().getPostTitle())
                 .postContent(findPost.get().getPostContent())
@@ -211,6 +211,7 @@ public class PostServiceImpl implements PostService{
 
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, postResponse, "게시글 상세보기를 성공했습니다."));
+
 
     }
 
