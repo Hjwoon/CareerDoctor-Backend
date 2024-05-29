@@ -59,22 +59,22 @@ public class SpecCertificate extends BaseEntity {
     private List<String> certificates;
 
     @ElementCollection
-    @CollectionTable(name = "ACTIVITIES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @CollectionTable(name = "ACTIVITIE", joinColumns = @JoinColumn(name = "SPEC_ID"))
     @Column(name = "ACTIVITY_NAME")
     private List<String> activities;
 
     @ElementCollection
-    @CollectionTable(name = "LANGUAGES", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @CollectionTable(name = "LANGUAGE", joinColumns = @JoinColumn(name = "SPEC_ID"))
     @Column(name = "LANGUAGE_NAME")
     private List<String> languages;
 
     @ElementCollection
-    @CollectionTable(name = "CAREERS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @CollectionTable(name = "CAREER", joinColumns = @JoinColumn(name = "SPEC_ID"))
     @Column(name = "CAREER_NAME")
     private List<String> careers;
 
     @ElementCollection
-    @CollectionTable(name = "ETCS", joinColumns = @JoinColumn(name = "SPEC_ID"))
+    @CollectionTable(name = "ETC", joinColumns = @JoinColumn(name = "SPEC_ID"))
     @Column(name = "ETC_NAME")
     private List<String> etcs;
 
