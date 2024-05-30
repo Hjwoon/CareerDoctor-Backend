@@ -20,6 +20,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
     private final SpecRepository specRepository;
     private final UserRepository userRepository;
 
+
     // 스펙 진단하기
     @Transactional
     public ResponseEntity<CustomApiResponse<?>> certificateSpec(CertificateSpecDto certificateSpecDto) {
@@ -131,6 +132,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
         Map<String, Integer> languageCount = new HashMap<>();
         Map<String, Integer> careerCount = new HashMap<>();
         Map<String, Integer> etcCount = new HashMap<>();
+        Map<SchoolDiv, Integer> schoolDivCount = new HashMap<>();
 
         for (SpecCertificate spec : allSpecs) {
             // 자격증 통계
@@ -153,6 +155,11 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
             for (String etc : spec.getEtcs()) {
                 etcCount.put(etc, etcCount.getOrDefault(etc, 0) + 1);
             }
+            // 학력 통계
+            SchoolDiv schoolDiv = spec.getSchoolDiv();
+            if (schoolDiv != null) {
+                schoolDivCount.put(schoolDiv, schoolDivCount.getOrDefault(schoolDiv, 0) + 1);
+            }
         }
 
         // 각 항목별 비율 계산
@@ -161,6 +168,14 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
         Map<String, Double> languagePercentage = calculatePercentage(languageCount, totalUsers);
         Map<String, Double> careerPercentage = calculatePercentage(careerCount, totalUsers);
         Map<String, Double> etcPercentage = calculatePercentage(etcCount, totalUsers);
+        Map<String, Double> schoolDivPercentage = calculatePercentageEnum(schoolDivCount, totalUsers); // 학력별 비율 계산 추가
+
+        // 각 항목별 최고 항목 찾기
+        String highestCertificate = findHighestPercentage(certificateCount);
+        String highestActivity = findHighestPercentage(activityCount);
+        String highestLanguage = findHighestPercentage(languageCount);
+        String highestCareer = findHighestPercentage(careerCount);
+
 
         // 2. 해당 유저의 스펙 진단
         Optional<SpecCertificate> userSpecOpt = specRepository.findById(specId);
@@ -193,12 +208,17 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
         // 응답 데이터 생성
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("totalUsers", totalUsers);
+        responseData.put("schoolDivPercentage", schoolDivPercentage);
         responseData.put("certificatePercentage", certificatePercentage);
         responseData.put("activityPercentage", activityPercentage);
         responseData.put("languagePercentage", languagePercentage);
         responseData.put("careerPercentage", careerPercentage);
         responseData.put("etcPercentage", etcPercentage);
         responseData.put("userSpecLevel", specLevel);
+        responseData.put("highestCertificate", highestCertificate);
+        responseData.put("highestActivity", highestActivity);
+        responseData.put("highestLanguage", highestLanguage);
+        responseData.put("highestCareer", highestCareer);
 
         // userId 추가
         User user = userSpec.getUser();
@@ -213,6 +233,23 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
                         "스펙 진단 결과를 반환했습니다."));
     }
 
+    // 각 항목별 최고 항목 찾기
+    private String findHighestPercentage(Map<String, Integer> countMap) {
+        double highestPercentage = 0.0;
+        String highestItem = null;
+        int total = countMap.values().stream().mapToInt(Integer::intValue).sum();
+
+        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+            double percentage = (entry.getValue() / (double) total) * 100;
+            if (percentage > highestPercentage) {
+                highestPercentage = percentage;
+                highestItem = entry.getKey();
+            }
+        }
+
+        return highestItem;
+    }
+
     // 각 항목별 비율 계산 메서드
     private Map<String, Double> calculatePercentage(Map<String, Integer> countMap, int totalUsers) {
         Map<String, Double> percentageMap = new HashMap<>();
@@ -221,6 +258,19 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
         for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
             double percentage = (entry.getValue() / (double) total) * 100;
             percentageMap.put(entry.getKey(), percentage);
+        }
+
+        return percentageMap;
+    }
+
+    // 각 항목별 비율 계산 메서드 // ENUM
+    private Map<String, Double> calculatePercentageEnum(Map<SchoolDiv, Integer> countMap, int totalUsers) {
+        Map<String, Double> percentageMap = new HashMap<>();
+        int total = countMap.values().stream().mapToInt(Integer::intValue).sum();
+
+        for (Map.Entry<SchoolDiv, Integer> entry : countMap.entrySet()) {
+            double percentage = (entry.getValue() / (double) total) * 100;
+            percentageMap.put(entry.getKey().toString(), percentage);
         }
 
         return percentageMap;
