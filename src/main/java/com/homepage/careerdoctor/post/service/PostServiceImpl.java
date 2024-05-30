@@ -81,8 +81,8 @@ public class PostServiceImpl implements PostService{
         for (Post post : posts) {
             Long postId = post.getPostId();
             postResponses.add(PostListDto.PostResponse.builder()
-                    .postId(postId)
                     .userId(post.getUser().getUserId())
+                    .postId(postId)
                     .postTitle(post.getPostTitle())
                     .postContent(post.getPostContent())
                     .createdAt(post.getCreatedAt())
