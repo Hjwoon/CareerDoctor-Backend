@@ -62,8 +62,12 @@ public class ReviewServiceImpl implements ReviewService{
         List<ReviewListDto.ReviewResponse> reviewResponses = new ArrayList<>();
 
         for (Review review : reviews) {
+
+            Long memberId = review.getUser().getMemberId();
+            String userId = userRepository.findById(memberId).get().getUserId();
+
             reviewResponses.add(ReviewListDto.ReviewResponse.builder()
-                            .userId(review.getUser().getUserId())
+                            .userId(userId)
                             .reviewId(review.getReviewId())
                             .opinion(review.getOpinion())
                             .bestPoint(review.getBestPoint())
