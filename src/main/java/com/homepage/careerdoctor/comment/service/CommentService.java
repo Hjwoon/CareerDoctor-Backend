@@ -25,7 +25,7 @@ public class CommentService {
     private final PostRepository postRepository;
 
     // 1. 댓글 작성
-    @Transactional //
+    @Transactional
     public ResponseEntity<CustomApiResponse<?>> writeComment(
             WriteCommentRequestDto dto) {
         // 1.1 댓글 작성자가 DB에 존재하는지 확인
