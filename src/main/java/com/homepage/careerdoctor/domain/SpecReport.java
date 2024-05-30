@@ -32,16 +32,18 @@ public class SpecReport extends BaseEntity {
     @OneToMany(mappedBy = "specReport")
     private List<Review> reviews;
 
-    @OneToMany(mappedBy = "specReport", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ElementCollection
+    @CollectionTable(name = "NEEDS", joinColumns = @JoinColumn(name = "REPORT_ID"))
+    @Column(name = "NEED_NAME")
     @JsonManagedReference
-    private List<Need> needs;
+    private List<String> needs;
 
     // 추가: User와의 관계 정의
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-    public void changeNeed(List<Need> needs) {
-        this.needs = needs;
-    }
+//    public void changeNeed(List<Need> needs) {
+//        this.needs = needs;
+//    }
 }

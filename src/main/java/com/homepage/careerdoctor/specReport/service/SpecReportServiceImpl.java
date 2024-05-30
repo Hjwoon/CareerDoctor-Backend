@@ -13,6 +13,7 @@ import com.homepage.careerdoctor.specReport.repository.SpecReportRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,33 +41,23 @@ public class SpecReportServiceImpl implements SpecReportService{
     public ResponseEntity<CustomApiResponse<?>> writeReport(Long specId, SpecReportWriteRequestDto dto) {
         // 존재하지 않는 진단서라면 실패 반환하는 로직 추가
         Optional<SpecCertificate> findCertificate = specRepository.findBySpecId(specId);
+        String userId = dto.getUserId();
 
         if (findCertificate.isEmpty()) {
             return ResponseEntity.status(201)
                     .body(CustomApiResponse.createSuccess(400, null, "존재하지 않는 스펙 진단서입니다."));
         }
 
-        User user = findCertificate.get().getUser();
+        Optional<User> user = userRepository.findByUserId(userId);
 
         // 존재하는 진단서라면 소견서 작성
         SpecReport newReport = SpecReport.builder()
-                .user(user)
+                .user(user.get())
+                .needs(dto.getNeeds())
                 .writerId(dto.getWriterId())
                 .reportTitle(dto.getReportTitle())
                 .reportContent(dto.getReportContent())
                 .build();
-
-        // Need 객체를 생성하고 SpecReport와 연관을 설정
-        List<Need> needs = dto.getNeeds().stream()
-                .map(needDto -> Need.builder()
-                        .specReport(newReport)
-                        .user(user)
-                        .needSpec(needDto.getNeedSpec())
-                        .build())
-                .collect(Collectors.toList());
-
-        newReport.changeNeed(needs); // SpecReport에 Need 리스트를 설정
-
 
         specReportRepository.save(newReport); // 새 소견서 저장
 
@@ -76,12 +67,12 @@ public class SpecReportServiceImpl implements SpecReportService{
                 .createdAt(newReport.getCreatedAt())
                 .build();
 
+
         return ResponseEntity.status(201)
                 .body(CustomApiResponse.createSuccess(201, data, "소견서를 성공적으로 작성했습니다."));
     }
 
-    // 소견서 원하는 사람들 목록 보기
-    // 리스판스 수정
+    // 피드백 원하는 사람들 목록 보기
     @Override
     public ResponseEntity<CustomApiResponse<?>> getReports() {
 
@@ -89,11 +80,6 @@ public class SpecReportServiceImpl implements SpecReportService{
         List<ReportWantUserListDto> userResponses = new ArrayList<>();
 
         for (SpecCertificate specCertificate : specCertificates) {
-
-            if (specCertificate.getUser() == null) {
-                continue;
-            }
-
             Long memberId = specCertificate.getUser().getMemberId();
             String userId = userRepository.findById(memberId).get().getUserId();
 
@@ -101,7 +87,7 @@ public class SpecReportServiceImpl implements SpecReportService{
                             .userId(userId)
                             .birth(specCertificate.getBirth())
                             .gender(specCertificate.getGender())
-                            .level(specCertificate.getUser().getSpecLevel())
+                            .level(SpecLevel.DANGER)
                             .build());
         }
 
@@ -110,7 +96,7 @@ public class SpecReportServiceImpl implements SpecReportService{
                         .createSuccess(201, userResponses, "피드백을 원하는 유저 목록을 불러오는데 성공했습니다."));
     }
 
-    // 받은 피드백 목록 보기
+    // 피드백 받은 소견서 목록 보기
     @Override
     public ResponseEntity<CustomApiResponse<?>> getAllMyReport(String userId) {
         // 현재 회원이 누구인지 DB에서 찾는다.
@@ -132,17 +118,18 @@ public class SpecReportServiceImpl implements SpecReportService{
             if (report.getUser().getUserId().equals(userId)) {
 
                 FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+
                 feedbackList.setReportId(report.getReportId());
                 feedbackList.setReportTitle(report.getReportTitle());
                 feedbackList.setReportContent(report.getReportContent());
-                feedbackList.setNeeds(report.getNeeds());
                 feedbackList.setCreatedAt(report.getCreatedAt());
+                feedbackList.setNeeds(report.getNeeds());
 
-                User writer = report.getUser();
+                feedbackList.setWriterLevel(SpecLevel.EXCELLENT);
                 feedbackList.setWriterId(report.getWriterId());
-                feedbackList.setWriterLevel(writer.getSpecLevel());
 
                 feedbackToMeDtoList.add(feedbackList);
+
             }
         }
 
@@ -158,10 +145,16 @@ public class SpecReportServiceImpl implements SpecReportService{
         Optional<User> findUser = userRepository.findByUserId(userId);
         // 상세를 보고 싶은 소견서를 찾는다.
         Optional<SpecReport> findReport = specReportRepository.findByReportId(reportId);
+
         // data로 반환할 DTO
         FeedbackToMeDto feedbackList = new FeedbackToMeDto();
+        List<String> needs = findReport.get().getNeeds();
+
 
         // 소견서에서 값을 찾아 dto를 이용해 response Body로 전달한다.
+        feedbackList.setReportId(reportId);
+        feedbackList.setWriterId(findReport.get().getWriterId());
+        feedbackList.setNeeds(needs);
         feedbackList.setReportTitle(findReport.get().getReportTitle());
         feedbackList.setReportContent(findReport.get().getReportContent());
         feedbackList.setCreatedAt(findReport.get().getCreatedAt());

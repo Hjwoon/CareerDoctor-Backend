@@ -15,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpecReportWriteRequestDto {
-    private String writerId;
+    private String userId; // 피드백 받고 싶은 사람
+    private String writerId; // 소견서 작성자
 
     @NotEmpty(message = "소견서 제목을 작성해주세요.")
     private String reportTitle;
@@ -25,7 +26,7 @@ public class SpecReportWriteRequestDto {
     private String reportContent;
 
     @Size(min = 1, message = "필요한 스펙을 1개 이상 선택해주세요.")
-    private List<NeedDto> needs = new ArrayList<>();
+    private List<String> needs = new ArrayList<>();
 
 
 }
