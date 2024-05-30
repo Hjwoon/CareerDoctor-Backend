@@ -84,11 +84,11 @@ public class SpecReportServiceImpl implements SpecReportService{
             String userId = userRepository.findById(memberId).get().getUserId();
 
             userResponses.add(ReportWantUserListDto.builder()
-                            .userId(userId)
-                            .birth(specCertificate.getBirth())
-                            .gender(specCertificate.getGender())
-                            .level(SpecLevel.DANGER)
-                            .build());
+                    .userId(userId)
+                    .birth(specCertificate.getBirth())
+                    .gender(specCertificate.getGender())
+                    .level(SpecLevel.DANGER)
+                    .build());
         }
 
         return ResponseEntity.status(201)

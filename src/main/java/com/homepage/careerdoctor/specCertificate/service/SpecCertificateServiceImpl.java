@@ -1,6 +1,7 @@
 package com.homepage.careerdoctor.specCertificate.service;
 
 import com.homepage.careerdoctor.domain.*;
+import com.homepage.careerdoctor.specCertificate.dto.CertificateAllSpecDto;
 import com.homepage.careerdoctor.specCertificate.dto.CertificateSpecDto;
 import com.homepage.careerdoctor.specCertificate.repository.SpecRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
@@ -112,5 +113,116 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
                 .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), responseData,
                         "스펙 진단 받기 입력을 성공했습니다."));
 
+    }
+
+
+    // 전체 유저들의 스펙 통계를 내고 해당 유저의 스펙을 진단하기
+    @Transactional
+    public ResponseEntity<CustomApiResponse<Object>> certificateAllSpec(Long specId, CertificateAllSpecDto dto) {
+        // 1. 전체 유저들의 스펙 통계내기
+        List<SpecCertificate> allSpecs = specRepository.findAll();
+
+        // 통계 정보를 저장할 변수들
+        int totalUsers = allSpecs.size();
+
+        // 각 항목별 통계 계산을 위한 맵
+        Map<String, Integer> certificateCount = new HashMap<>();
+        Map<String, Integer> activityCount = new HashMap<>();
+        Map<String, Integer> languageCount = new HashMap<>();
+        Map<String, Integer> careerCount = new HashMap<>();
+        Map<String, Integer> etcCount = new HashMap<>();
+
+        for (SpecCertificate spec : allSpecs) {
+            // 자격증 통계
+            for (String certificate : spec.getCertificates()) {
+                certificateCount.put(certificate, certificateCount.getOrDefault(certificate, 0) + 1);
+            }
+            // 대외활동 통계
+            for (String activity : spec.getActivities()) {
+                activityCount.put(activity, activityCount.getOrDefault(activity, 0) + 1);
+            }
+            // 언어 통계
+            for (String language : spec.getLanguages()) {
+                languageCount.put(language, languageCount.getOrDefault(language, 0) + 1);
+            }
+            // 경력 통계
+            for (String career : spec.getCareers()) {
+                careerCount.put(career, careerCount.getOrDefault(career, 0) + 1);
+            }
+            // 기타 통계
+            for (String etc : spec.getEtcs()) {
+                etcCount.put(etc, etcCount.getOrDefault(etc, 0) + 1);
+            }
+        }
+
+        // 각 항목별 비율 계산
+        Map<String, Double> certificatePercentage = calculatePercentage(certificateCount, totalUsers);
+        Map<String, Double> activityPercentage = calculatePercentage(activityCount, totalUsers);
+        Map<String, Double> languagePercentage = calculatePercentage(languageCount, totalUsers);
+        Map<String, Double> careerPercentage = calculatePercentage(careerCount, totalUsers);
+        Map<String, Double> etcPercentage = calculatePercentage(etcCount, totalUsers);
+
+        // 2. 해당 유저의 스펙 진단
+        Optional<SpecCertificate> userSpecOpt = specRepository.findById(specId);
+        if (userSpecOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(CustomApiResponse.createFailWithoutData(HttpStatus.NOT_FOUND.value(),
+                            "해당 스펙을 찾을 수 없습니다."));
+        }
+
+        SpecCertificate userSpec = userSpecOpt.get();
+
+        // 기본 스펙 4개 분야: 자격증, 대외활동, 언어, 경력
+        int satisfiedSpecs = 0;
+        if (!userSpec.getCertificates().isEmpty()) satisfiedSpecs++;
+        if (!userSpec.getActivities().isEmpty()) satisfiedSpecs++;
+        if (!userSpec.getLanguages().isEmpty()) satisfiedSpecs++;
+        if (!userSpec.getCareers().isEmpty()) satisfiedSpecs++;
+
+        String specLevel; // 유저의 스펙 레벨
+        if (satisfiedSpecs >= 4) {
+            specLevel = "취뽀생";
+        } else if (satisfiedSpecs == 3) {
+            specLevel = "스펙우수";
+        } else if (satisfiedSpecs == 2) {
+            specLevel = "스펙양호";
+        } else {
+            specLevel = "스펙위험";
+        }
+
+        // 응답 데이터 생성
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("totalUsers", totalUsers);
+        responseData.put("certificatePercentage", certificatePercentage);
+        responseData.put("activityPercentage", activityPercentage);
+        responseData.put("languagePercentage", languagePercentage);
+        responseData.put("careerPercentage", careerPercentage);
+        responseData.put("etcPercentage", etcPercentage);
+        responseData.put("userSpecLevel", specLevel);
+
+        // userId 추가
+        User user = userSpec.getUser();
+        if (user != null) {
+            responseData.put("userId", user.getUserId()); // userId 응답 데이터에 추가
+        } else {
+            responseData.put("userId", null); // 비회원일 경우 null
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), responseData,
+                        "스펙 진단 결과를 반환했습니다."));
+    }
+
+    // 각 항목별 비율 계산 메서드
+    private Map<String, Double> calculatePercentage(Map<String, Integer> countMap, int totalUsers) {
+        Map<String, Double> percentageMap = new HashMap<>();
+        int total = countMap.values().stream().mapToInt(Integer::intValue).sum();
+
+        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
+            double percentage = (entry.getValue() / (double) total) * 100;
+            percentageMap.put(entry.getKey(), percentage);
+        }
+
+        return percentageMap;
     }
 }

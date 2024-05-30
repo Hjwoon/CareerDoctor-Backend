@@ -43,7 +43,5 @@ public class SpecReport extends BaseEntity {
     @JoinColumn(name = "MEMBER_ID")
     private User user;
 
-//    public void changeNeed(List<Need> needs) {
-//        this.needs = needs;
-//    }
+
 }
