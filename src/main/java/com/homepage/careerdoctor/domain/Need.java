@@ -24,10 +24,6 @@ public class Need extends BaseEntity {
     @JsonBackReference
     private SpecReport specReport;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
-    private User user;
-
     @Enumerated(EnumType.STRING)
     private NeedSpec needSpec;
 }

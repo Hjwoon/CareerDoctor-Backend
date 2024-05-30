@@ -24,7 +24,7 @@ public class SpecReportListDto {
         private SpecLevel level;
         private String reportTitle;
         private String reportContent;
-        private List<Need> needs = new ArrayList<>();
+        private List<String> needs = new ArrayList<>();
         private LocalDateTime createdAt;
 
 

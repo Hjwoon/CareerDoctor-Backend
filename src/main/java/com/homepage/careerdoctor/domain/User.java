@@ -49,8 +49,6 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Vote> votes;
 
-    @OneToMany(mappedBy = "user")
-    private List<Need> needs;
 
     @OneToMany(mappedBy = "user")
     private List<PresType> presTypes;
