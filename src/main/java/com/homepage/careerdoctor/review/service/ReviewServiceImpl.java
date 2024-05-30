@@ -63,6 +63,7 @@ public class ReviewServiceImpl implements ReviewService{
 
         for (Review review : reviews) {
             reviewResponses.add(ReviewListDto.ReviewResponse.builder()
+                            .userId(review.getUser().getUserId())
                             .reviewId(review.getReviewId())
                             .opinion(review.getOpinion())
                             .bestPoint(review.getBestPoint())

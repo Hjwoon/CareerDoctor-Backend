@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -102,7 +103,9 @@ public class PostServiceImpl implements PostService{
             if (totalCount > 0) {
                 for (int j = 0; j < votes.size(); j++) {
                     double percent = ((double) votes.get(j).getVoteCount() / totalCount) * 100;
-                    votes.get(j).changePercent(percent);
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    double formattedPercent = Double.parseDouble(df.format(percent));
+                    votes.get(j).changePercent(formattedPercent);
                 }
             } else {
                 for (int j = 0; j < votes.size(); j++) {
@@ -218,13 +221,36 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public ResponseEntity<CustomApiResponse<?>> plusVoteCount(Long voteId) {
-        Vote vote = voteRepository.findById(voteId).get();
+
+        Vote findVote = voteRepository.findById(voteId).get();
+        Long postId = findVote.getPost().getPostId();
         int count = voteRepository.findById(voteId).get().getVoteCount();
         count++;
-        vote.changeVoteCount(count);
-        voteRepository.save(vote);
+        findVote.changeVoteCount(count);
+
+        int totalCount = 0;
+
+        List<Vote> allVotes = postRepository.findByPostId(postId).get().getVotes();
+        for (Vote vote : allVotes) {
+            totalCount += vote.getVoteCount();
+        }
+
+        for (Vote vote : allVotes) {
+            double percent = (double) vote.getVoteCount() / totalCount * 100;
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            double formattedPercent = Double.parseDouble(df.format(percent));
+            vote.changePercent(formattedPercent);
+
+            voteRepository.save(vote);
+        }
+
+        VoteCountResponseDto dto = VoteCountResponseDto.builder()
+                .postId(postId)
+                .voteCount(count)
+                .build();
 
         return ResponseEntity.status(201)
-                .body(CustomApiResponse.createSuccess(201, count, "투표 수가 1 증가하였습니다."));
+                .body(CustomApiResponse.createSuccess(201, dto, "투표 수가 1 증가하였습니다."));
     }
 }
