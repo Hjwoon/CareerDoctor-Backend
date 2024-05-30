@@ -18,6 +18,7 @@ public class PostListDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostResponse {
+        private Long postId;
         private String userId;
         private String postTitle;
         private String postContent;
