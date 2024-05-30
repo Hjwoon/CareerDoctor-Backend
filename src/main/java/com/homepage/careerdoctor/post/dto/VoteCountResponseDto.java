@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VoteCountResponseDto {
-
+    private Long postId;
     private int voteCount;
     private double percent;
 
