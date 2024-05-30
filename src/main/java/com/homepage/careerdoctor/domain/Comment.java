@@ -16,7 +16,7 @@ public class Comment extends BaseEntity {
     private Long commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,6 +24,15 @@ public class Comment extends BaseEntity {
     private Post post;
 
     @Column(name = "COMMENT_CONTENT")
-    private String commentContent;
+    private String content; // 댓글 내용
+
+    public void createComment(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.homepage.careerdoctor.specCertificate.service;
 
 import com.homepage.careerdoctor.domain.*;
-import com.homepage.careerdoctor.specCertificate.dto.CertificateAllSpecDto;
 import com.homepage.careerdoctor.specCertificate.dto.CertificateSpecDto;
 import com.homepage.careerdoctor.specCertificate.repository.SpecRepository;
 import com.homepage.careerdoctor.user.repository.UserRepository;
@@ -46,56 +45,30 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
         SpecCertificate savedSpecCertificate;
 
-        if (certificateSpecDto.getUserId() == null) { // 여기서 의미하는 userId는 User 테이블에 저장될 때 부여되는 Long 타입의 memberId를 의미
-            // 비회원
-            // userId = ""인 SpecCertificate 객체 생성 후 값 넣기
+        // 회원
+        // userId 있는 SpecCertificate 객체 생성 후 값 넣기
+        Optional<User> foundUser = userRepository.findByUserId(certificateSpecDto.getUserId()); // userID로 해당하는 회원이 있는지
 
-            // userId가 비어있는 SpecCertificate
-            SpecCertificate createNoUserIdSpecCertificate = SpecCertificate.builder()
-                    .user(null)
-                    .name(name)
-                    .birth(birth)
-                    .gender(gender)
-                    .schoolDiv(schoolDiv)
-                    .entranceYear(entranceYear)
-                    .entranceDiv(entranceDiv)
-                    .graduateDiv(graduateDiv)
-                    .major(major)
-                    .avgCredit(avgCredit)
-                    .certificates(certificates)
-                    .activities(activities)
-                    .languages(languages)
-                    .careers(careers)
-                    .etcs(etcs)
-                    .build();
-            savedSpecCertificate = specRepository.save(createNoUserIdSpecCertificate); // 비회원 스펙 저장
-
-        } else {
-            // 회원
-            // userId 있는 SpecCertificate 객체 생성 후 값 넣기
-            Optional<User> foundUser = userRepository.findByUserId(certificateSpecDto.getUserId()); // userID로 해당하는 회원이 있는지
-
-            // userId가 비어있는 SpecCertificate
-            SpecCertificate createUserSpecCertificate = SpecCertificate.builder()
-                    // get메소드로 실제 엔티티를 가져옴. get 호출을 해야 실제 엔티티를 넣을 수 있음
-                    .user(foundUser.orElse(null)) // get메소드 대신 orElse(null)을 사용하여 실제 엔티티를 가져옴
-                    .name(name)
-                    .birth(birth)
-                    .gender(gender)
-                    .schoolDiv(schoolDiv)
-                    .entranceYear(entranceYear)
-                    .entranceDiv(entranceDiv)
-                    .graduateDiv(graduateDiv)
-                    .major(major)
-                    .avgCredit(avgCredit)
-                    .certificates(certificates)
-                    .activities(activities)
-                    .languages(languages)
-                    .careers(careers)
-                    .etcs(etcs)
-                    .build();
-            savedSpecCertificate = specRepository.save(createUserSpecCertificate); // 회원 스펙 저장
-        }
+        // userId가 비어있는 SpecCertificate
+        SpecCertificate createUserSpecCertificate = SpecCertificate.builder()
+                // get메소드로 실제 엔티티를 가져옴. get 호출을 해야 실제 엔티티를 넣을 수 있음
+                .user(foundUser.orElse(null)) // get메소드 대신 orElse(null)을 사용하여 실제 엔티티를 가져옴
+                .name(name)
+                .birth(birth)
+                .gender(gender)
+                .schoolDiv(schoolDiv)
+                .entranceYear(entranceYear)
+                .entranceDiv(entranceDiv)
+                .graduateDiv(graduateDiv)
+                .major(major)
+                .avgCredit(avgCredit)
+                .certificates(certificates)
+                .activities(activities)
+                .languages(languages)
+                .careers(careers)
+                .etcs(etcs)
+                .build();
+        savedSpecCertificate = specRepository.save(createUserSpecCertificate); // 회원 스펙 저장
 
         // 에러 코드 400
         // 필수 필드 유효성 검사
@@ -119,7 +92,10 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
     // 전체 유저들의 스펙 통계를 내고 해당 유저의 스펙을 진단하기
     @Transactional
-    public ResponseEntity<CustomApiResponse<Object>> certificateAllSpec(Long specId, CertificateAllSpecDto dto) {
+    public ResponseEntity<CustomApiResponse<Object>> certificateAllSpec(String userId) {
+        //Optional<User> user = userRepository.findByUserId(userId);
+        Long specId = userRepository.findByUserId(userId).get().getCertificates().getSpecId();
+
         // 1. 전체 유저들의 스펙 통계내기
         List<SpecCertificate> allSpecs = specRepository.findAll();
 
@@ -222,11 +198,7 @@ public class SpecCertificateServiceImpl implements SpecCertificateService {
 
         // userId 추가
         User user = userSpec.getUser();
-        if (user != null) {
-            responseData.put("userId", user.getUserId()); // userId 응답 데이터에 추가
-        } else {
-            responseData.put("userId", null); // 비회원일 경우 null
-        }
+        responseData.put("userId", user.getUserId()); // userId 응답 데이터에 추가
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CustomApiResponse.createSuccess(HttpStatus.OK.value(), responseData,

@@ -1,6 +1,5 @@
 package com.homepage.careerdoctor.specCertificate.controller;
 
-import com.homepage.careerdoctor.specCertificate.dto.CertificateAllSpecDto;
 import com.homepage.careerdoctor.specCertificate.dto.CertificateSpecDto;
 import com.homepage.careerdoctor.specCertificate.service.SpecCertificateServiceImpl;
 import com.homepage.careerdoctor.util.response.CustomApiResponse;
@@ -22,8 +21,8 @@ public class SpecCertificateController {
     }
 
     // 스펙 진단하기
-    @GetMapping("/view-spec/{specId}")
-    public ResponseEntity<CustomApiResponse<Object>> showUsersSpec(@PathVariable Long specId, CertificateAllSpecDto dto) {
-        return specCertificateService.certificateAllSpec(specId, dto);
+    @GetMapping("/view-spec/{userId}")
+    public ResponseEntity<CustomApiResponse<Object>> showUsersSpec(@PathVariable String userId) {
+        return specCertificateService.certificateAllSpec(userId);
     }
 }
